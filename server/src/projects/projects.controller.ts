@@ -1,25 +1,31 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put, UseGuards
+} from "@nestjs/common";
 import { ProjectOrmEntity } from './project.orm-entity';
 import { ProjectsService } from './projects.service';
-import {ApiBody } from "@nestjs/swagger";
-import {ProjectResponseDto} from "./project-response.dto";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
+import ProjectResponseDto from './project-response.dto';
+import JwtAuthGuard from "../auth/jwt-auth.guard";
 
-export class CreateUserDto {
-  email: string;
-  password: string;
-  isEnabled?: boolean = true;
-}
+@UseGuards(JwtAuthGuard)
+@ApiTags("projects")
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly _projectSerivce: ProjectsService) {}
 
   @Get()
-  async findAll(): Promise<ProjectOrmEntity[]> {
+  async getAll(): Promise<ProjectOrmEntity[]> {
     return await this._projectSerivce.readAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<ProjectResponseDto> {
+  async getById(@Param('id') id: string): Promise<ProjectResponseDto> {
     try {
       const res = await this._projectSerivce.readOne(id);
       if (!!res) {
@@ -39,7 +45,7 @@ export class ProjectsController {
       },
     },
   })
-  @Post('create')
+  @Post()
   async create(@Body('name') name: string): Promise<ProjectResponseDto> {
     try {
       const res = await this._projectSerivce.create(name);
@@ -49,33 +55,24 @@ export class ProjectsController {
     }
   }
 
-  @Post('update')
+  @Put()
   async update(@Body() project: ProjectOrmEntity): Promise<ProjectResponseDto> {
     try {
-      const res = await this._projectSerivce.update(project);
-      return { isError: false, message: res };
+      await this._projectSerivce.update(project.id, project);
+      return { isError: false, message: null };
     } catch (e) {
       return { isError: true, message: e.message };
     }
   }
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { example: 'uuid' },
-      },
-    },
-  })
-  @Post('delete')
-  async delete(@Body('id') id: string): Promise<ProjectResponseDto> {
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<ProjectResponseDto> {
     try {
-      const res = await this._projectSerivce.delete(id);
-      return { isError: false, message: res };
+      const deleteResult = await this._projectSerivce.delete(id);
+      if (!deleteResult.affected) return { isError: true, message: 'NotFound' };
+      return { isError: false, message: null };
     } catch (e) {
       return { isError: true, message: e.message };
     }
   }
-
-
 }
