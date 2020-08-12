@@ -32,6 +32,7 @@ import * as Joi from '@hapi/joi';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_DB'),
+        logging: false,
         autoLoadEntities: true,
         // entities: ["entities/*.js"],
         synchronize: false,

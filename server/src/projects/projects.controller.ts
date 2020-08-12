@@ -10,8 +10,8 @@ import {
 import { ProjectOrmEntity } from './project.orm-entity';
 import { ProjectsService } from './projects.service';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
-import ProjectResponseDto from './project-response.dto';
-import JwtAuthGuard from "../auth/jwt-auth.guard";
+import ProjectResponse from './project-response.dto';
+import JwtAuthGuard from "../auth/guards/jwt-auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @ApiTags("projects")
@@ -25,7 +25,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<ProjectResponseDto> {
+  async getById(@Param('id') id: string): Promise<ProjectResponse> {
     try {
       const res = await this._projectSerivce.readOne(id);
       if (!!res) {
@@ -46,7 +46,7 @@ export class ProjectsController {
     },
   })
   @Post()
-  async create(@Body('name') name: string): Promise<ProjectResponseDto> {
+  async create(@Body('name') name: string): Promise<ProjectResponse> {
     try {
       const res = await this._projectSerivce.create(name);
       return { isError: false, message: res };
@@ -56,7 +56,7 @@ export class ProjectsController {
   }
 
   @Put()
-  async update(@Body() project: ProjectOrmEntity): Promise<ProjectResponseDto> {
+  async update(@Body() project: ProjectOrmEntity): Promise<ProjectResponse> {
     try {
       await this._projectSerivce.update(project.id, project);
       return { isError: false, message: null };
@@ -66,7 +66,7 @@ export class ProjectsController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<ProjectResponseDto> {
+  async delete(@Param('id') id: string): Promise<ProjectResponse> {
     try {
       const deleteResult = await this._projectSerivce.delete(id);
       if (!deleteResult.affected) return { isError: true, message: 'NotFound' };

@@ -1,4 +1,5 @@
-import {Column, Entity, Index, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { RoleOrmEntity } from "./role.orm-entity";
 
 @Index("account_id_uindex", ["id"], { unique: true })
 @Index("account_pk", ["id"], { unique: true })
@@ -19,6 +20,6 @@ export class AccountOrmEntity {
   @Column("character varying", { name: "password" })
   password: string;
 
-  // @OneToOne(() => AccountRoleOrmEntity, (accountRole) => accountRole.account)
-  // accountRole: AccountRoleOrmEntity;
+  @ManyToMany(() => RoleOrmEntity, (role) => role.accounts)
+  roles: RoleOrmEntity[];
 }
