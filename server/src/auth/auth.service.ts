@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import TokenPayload from './interfaces/token-payload.interface';
 import CreateRoleDto from '../accounts/create-role.dto';
 import RoleEntity from '../accounts/role.entity';
-import { UpdateResult } from "typeorm";
+import { DeleteResult, UpdateResult } from "typeorm";
 import UpdateAccountDto from "../accounts/update-account.dto";
 
 @Injectable()
@@ -54,12 +54,14 @@ export class AuthService {
   public async getAllAccounts(): Promise<AccountEntity[]> {
     return await this._accountsService.readAll();
   }
-  public async getAllAccountsWithPermissions(): Promise<AccountEntity[]> {
-    const accounts = await this._accountsService.readAllWithRoles();
-    return accounts;
+  public async getAllAccountsWithRoles(): Promise<AccountEntity[]> {
+    return await this._accountsService.readAllWithRoles();
   }
-  public async updateAccount(account: UpdateAccountDto): Promise<UpdateResult> {
-    return await this._accountsService.update(account.id, account);
+  public async updateAccount(accountId: string, account: UpdateAccountDto): Promise<UpdateResult> {
+    return await this._accountsService.update(accountId, account);
+  }
+  public async deleteAccount(accountId: string): Promise<DeleteResult> {
+    return await this._accountsService.delete(accountId);
   }
 
   public async createRole(role: CreateRoleDto): Promise<RoleEntity> {

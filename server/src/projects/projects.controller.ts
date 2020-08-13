@@ -2,25 +2,35 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, HttpCode,
   Param,
   Post,
-  Put, UseGuards
+  Put, Req, UseGuards
 } from "@nestjs/common";
 import { ProjectOrmEntity } from './project.orm-entity';
 import { ProjectsService } from './projects.service';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import ProjectResponse from './project-response.dto';
 import JwtAuthGuard from "../auth/guards/jwt-auth.guard";
+import RequestWithAccount from "../accounts/request-with-account.interface";
+import CreateProjectDto from "./dto/create-project.dto";
+import { RolesGuard } from "../auth/roles.guard";
+import UpdateProjectDto from "./dto/update-project.dto";
+import { Roles } from "../auth/roles.decorator";
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags("projects")
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly _projectSerivce: ProjectsService) {}
 
   @Get()
-  async getAll(): Promise<ProjectOrmEntity[]> {
+  async getMyProjects(@Req() req: RequestWithAccount): Promise<ProjectOrmEntity[]> {
+    return await this._projectSerivce.readProjectsByAccount(req.user.id);
+  }
+  @Get('projects')
+  @Roles('admin')
+  async getAllProjects(): Promise<ProjectOrmEntity[]> {
     return await this._projectSerivce.readAll();
   }
 
@@ -29,11 +39,11 @@ export class ProjectsController {
     try {
       const res = await this._projectSerivce.readOne(id);
       if (!!res) {
-        return { isError: true, message: 'NotFoundEntityError' };
+        return new ProjectResponse(true,  'NotFoundEntityError');
       }
-      return { isError: false, message: res };
+      return new ProjectResponse(false, null);
     } catch (e) {
-      return { isError: true, message: e.message };
+      return new ProjectResponse(true, e.message);
     }
   }
 
@@ -46,33 +56,34 @@ export class ProjectsController {
     },
   })
   @Post()
-  async create(@Body('name') name: string): Promise<ProjectResponse> {
+  async create(@Req() req: RequestWithAccount, @Body() project: CreateProjectDto): Promise<ProjectResponse> {
     try {
-      const res = await this._projectSerivce.create(name);
-      return { isError: false, message: res };
+      const newProject = await this._projectSerivce.create(project, req.user.id);
+      return new ProjectResponse(false, newProject);
     } catch (e) {
-      return { isError: true, message: e.message };
+      return new ProjectResponse(true, e.message);
     }
   }
 
-  @Put()
-  async update(@Body() project: ProjectOrmEntity): Promise<ProjectResponse> {
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() project: UpdateProjectDto): Promise<ProjectResponse> {
     try {
-      await this._projectSerivce.update(project.id, project);
-      return { isError: false, message: null };
+      await this._projectSerivce.update(id, project);
+      return new ProjectResponse(false, null);
     } catch (e) {
-      return { isError: true, message: e.message };
+      return new ProjectResponse(true, e.message);
     }
   }
 
+  @HttpCode(200)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<ProjectResponse> {
     try {
       const deleteResult = await this._projectSerivce.delete(id);
-      if (!deleteResult.affected) return { isError: true, message: 'NotFound' };
-      return { isError: false, message: null };
+      if (!deleteResult.affected) return new ProjectResponse(true,'NotFound' );
+      return new ProjectResponse(false, null);
     } catch (e) {
-      return { isError: true, message: e.message };
+      return new ProjectResponse(true,e.message );
     }
   }
 }

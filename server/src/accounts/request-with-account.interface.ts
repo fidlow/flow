@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import {AccountEntity} from "../../accounts/account.entity";
+import {AccountEntity} from "./account.entity";
 
 interface RequestWithAccount extends Request {
   user: AccountEntity;

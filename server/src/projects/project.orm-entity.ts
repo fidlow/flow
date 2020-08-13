@@ -1,4 +1,5 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { AccountOrmEntity } from "../accounts/account.orm-entity";
 
 @Index('project_id_uindex', ['id'], { unique: true })
 @Index('project_pk', ['id'], { unique: true })
@@ -20,4 +21,14 @@ export class ProjectOrmEntity {
     default: () => "(date_part('epoch', now()) * (1000)::double precision)",
   })
   date: string;
+
+  @Column("integer", { name: "status", default: () => "0" })
+  status: number;
+
+  @ManyToOne(() => AccountOrmEntity, (account) => account.projects, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn([{ name: "owner", referencedColumnName: "id" }])
+  owner: AccountOrmEntity;
+
 }

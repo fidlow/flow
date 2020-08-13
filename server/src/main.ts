@@ -9,6 +9,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({
       disableErrorMessages: false,
+    transform: true
     }),
   );
   app.useGlobalInterceptors(

@@ -1,10 +1,9 @@
 import { Expose} from 'class-transformer';
 import RoleEntity from "./role.entity";
+import { AccountInterface } from "../common/AccountInterface";
 export type AccountId = string;
 
-export class AccountEntity {
-
-  // private readonly _permissions;
+export class AccountEntity implements AccountInterface {
 
   constructor(
     private readonly _id: AccountId,
@@ -26,7 +25,7 @@ export class AccountEntity {
     return this._name;
   }
 
-  @Expose()
+  @Expose({groups: ["get"]})
   get roles(): RoleEntity[] {
     return this._roles;
   }

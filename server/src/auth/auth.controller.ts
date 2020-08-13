@@ -4,7 +4,7 @@ import {
   HttpCode,
   Req,
   Post,
-  UseGuards, Get, SerializeOptions, Put
+  UseGuards, Get, SerializeOptions, Put, Delete, Param
 } from "@nestjs/common";
 import {AuthService} from "./auth.service";
 import RegisterDto from "./dto/register.dto";
@@ -12,7 +12,7 @@ import DatabaseErrorCode from "../database/databaseErrorCode";
 import AuthResponse from "./account-response.dto";
 import {LocalAuthenticationGuard} from "./guards/local-auth.guard";
 import LoginDto from "./dto/login.dto";
-import RequestWithAccount from "./interfaces/request-with-account.interface";
+import RequestWithAccount from "../accounts/request-with-account.interface";
 import JwtAuthenticationGuard from "./guards/jwt-auth.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "./roles.guard";
@@ -62,12 +62,53 @@ export class AuthController {
   authenticate(@Req() req: RequestWithAccount): AuthResponse {
     return new AuthResponse(false, req.user);
   }
+  @SerializeOptions({groups: ['get']})
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Get('account')
+  getAccount(@Req() req: RequestWithAccount): AuthResponse {
+    return new AuthResponse(false, req.user);
+  }
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Put('account')
+  async updateMyAccount(@Req() req: RequestWithAccount, @Body() account: UpdateAccountDto): Promise<AuthResponse> {
+    try {
+      const accountEntity: AccountEntity = req.user;
+      await this._authService.updateAccount(accountEntity.id, account);
+      return new AuthResponse(false, null);
+    } catch (e) {
+      return new AuthResponse(true, e.message);
+    }
+  }
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Delete('account')
+  async deleteMyAccount(@Req() req: RequestWithAccount): Promise<AuthResponse> {
+    try {
+      const account: AccountEntity = req.user;
+      const deleteResult = await this._authService.deleteAccount(account.id);
+      if (!deleteResult.affected) return new AuthResponse(true, 'NotFound');
+      return new AuthResponse(false, null);
+    } catch (e) {
+      return new AuthResponse(true, e.message);
+    }
+  }
   @UseGuards(JwtAuthenticationGuard, RolesGuard)
   @Roles('admin')
-  @Put('account')
-  async updateAccount(@Body() account: UpdateAccountDto): Promise<AuthResponse> {
+  @Put('account/:id')
+  async updateAccount(@Param('id') id: string, @Body() account: UpdateAccountDto): Promise<AuthResponse> {
     try {
-      await this._authService.updateAccount(account.id, account);
+      await this._authService.updateAccount(id, account);
+      return new AuthResponse(false, null);
+    } catch (e) {
+      return new AuthResponse(true, e.message);
+    }
+  }
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Roles('admin')
+  @Delete('account/:id')
+  async deleteAccount(@Param('id') id: string): Promise<AuthResponse> {
+    try {
+      const deleteResult = await this._authService.deleteAccount(id);
+      if (!deleteResult.affected) return new AuthResponse(true, 'NotFound');
       return new AuthResponse(false, null);
     } catch (e) {
       return new AuthResponse(true, e.message);
@@ -88,24 +129,23 @@ export class AuthController {
   @SerializeOptions({groups: ['get']})
   @UseGuards(JwtAuthenticationGuard, RolesGuard)
   @Roles('admin')
+  @Get('accounts')
+  async getAllAccounts(): Promise<AuthResponse> {
+    try {
+      const createdAccount = await this._authService.getAllAccountsWithRoles();
+      return new AuthResponse(false, createdAccount);
+    } catch (e) {
+      return new AuthResponse(true,  e.message);
+    }
+  }
+  @SerializeOptions({groups: ['get']})
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Roles('admin')
   @Get('roles')
   async getAllRole(): Promise<AuthResponse> {
     try {
       const roles = await this._authService.getAllRoles();
       return new AuthResponse(false, roles);
-    } catch (e) {
-      return new AuthResponse(true,  e.message);
-    }
-  }
-
-  @SerializeOptions({groups: ['get']})
-  @UseGuards(JwtAuthenticationGuard, RolesGuard)
-  @Roles('admin')
-  @Get('accounts')
-  async getAllAccounts(): Promise<AuthResponse> {
-    try {
-      const createdAccount = await this._authService.getAllAccountsWithPermissions();
-      return new AuthResponse(false, createdAccount);
     } catch (e) {
       return new AuthResponse(true,  e.message);
     }

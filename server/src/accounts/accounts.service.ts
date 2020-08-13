@@ -31,7 +31,7 @@ export class AccountsService {
   }
   async update(accountId: string, account: UpdateAccountDto): Promise<UpdateResult> {
     const accountOrmEntity = await this._accountRepository.findOne({accountId });
-    if(account.name) accountOrmEntity.accountId = account.name;
+    if(account.name) accountOrmEntity.name = account.name;
     if(account.email) accountOrmEntity.email = account.email;
     if(account.password) accountOrmEntity.password = account.password;
     return this._accountRepository.update(accountOrmEntity.id, accountOrmEntity);
