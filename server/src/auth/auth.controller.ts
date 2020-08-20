@@ -16,11 +16,11 @@ import RequestWithAccount from "../accounts/request-with-account.interface";
 import JwtAuthenticationGuard from "./guards/jwt-auth.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "./roles.guard";
-import CreateRoleDto from "../accounts/create-role.dto";
-import AddRoleAccount from "../accounts/add-role-account.dto";
+import CreateRoleDto from "../accounts/dto/create-role.dto";
+import AddRoleAccount from "../accounts/dto/add-role-account.dto";
 import { Roles } from "./roles.decorator";
 import { AccountEntity } from "../accounts/account.entity";
-import UpdateAccountDto from "../accounts/update-account.dto";
+import UpdateAccountDto from "../accounts/dto/update-account.dto";
 
 @ApiTags("auth")
 @Controller('auth')

@@ -19,8 +19,8 @@ import UpdateProjectDto from "./dto/update-project.dto";
 import { Roles } from "../auth/roles.decorator";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@ApiTags("projects")
-@Controller('projects')
+@ApiTags("project")
+@Controller('project')
 export class ProjectsController {
   constructor(private readonly _projectSerivce: ProjectsService) {}
 
@@ -28,7 +28,7 @@ export class ProjectsController {
   async getMyProjects(@Req() req: RequestWithAccount): Promise<ProjectOrmEntity[]> {
     return await this._projectSerivce.readProjectsByAccount(req.user.id);
   }
-  @Get('projects')
+  @Get('all')
   @Roles('admin')
   async getAllProjects(): Promise<ProjectOrmEntity[]> {
     return await this._projectSerivce.readAll();
@@ -47,19 +47,12 @@ export class ProjectsController {
     }
   }
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { example: 'Project Name' },
-      },
-    },
-  })
+  // @ApiBody({schema: {type: 'object',properties: {name: { example: 'Project Name' }, },},})
   @Post()
   async create(@Req() req: RequestWithAccount, @Body() project: CreateProjectDto): Promise<ProjectResponse> {
     try {
-      const newProject = await this._projectSerivce.create(project, req.user.id);
-      return new ProjectResponse(false, newProject);
+      const newProjectId = await this._projectSerivce.create(project, req.user.id);
+      return new ProjectResponse(false, newProjectId);
     } catch (e) {
       return new ProjectResponse(true, e.message);
     }

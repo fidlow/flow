@@ -1,16 +1,16 @@
-import { ExecutionStatus } from "./ExecutionStatus";
 import { TaskInterface } from "./TaskInterface";
-import { AccountInterface } from "./AccountInterface";
+import { AccountId } from "./AccountInterface";
+
 
 export interface ProjectInterface {
-    id: string;
+    id?: ProjectId;
     name: string;
     date: Date;
-    status: ExecutionStatus;
-    owner: AccountInterface;
+    owner: AccountId;
     tasks?: TaskInterface[];
     // addTask(task: TaskInterface): void;
     // updateTask(task: TaskInterface): void;
     // deleteTaskById(taskId: string): void;
 }
 
+export type ProjectId = string;

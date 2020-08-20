@@ -22,9 +22,6 @@ export class ProjectOrmEntity {
   })
   date: string;
 
-  @Column("integer", { name: "status", default: () => "0" })
-  status: number;
-
   @ManyToOne(() => AccountOrmEntity, (account) => account.projects, {
     onDelete: "CASCADE",
   })

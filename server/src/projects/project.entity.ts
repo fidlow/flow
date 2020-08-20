@@ -1,25 +1,23 @@
-import { ProjectInterface } from '../common/ProjectInterface';
-import { ExecutionStatus } from '../common/ExecutionStatus';
-import { TaskInterface } from '../common/TaskInterface';
-import { AccountEntity } from '../accounts/account.entity';
+import { ProjectId, ProjectInterface } from "../common/ProjectInterface";
+import { TaskInterface } from "../common/TaskInterface";
+import { AccountId } from "../common/AccountInterface";
 
 export class ProjectEntity implements ProjectInterface {
   private _tasks?: TaskInterface[];
 
   constructor(
-    private _id: string,
     private _date: Date,
     private _name: string,
-    private _status: ExecutionStatus,
-    private _owner: AccountEntity,
+    private _owner: AccountId,
+    private _id?: ProjectId,
   ) {}
 
   get tasks(): TaskInterface[] {
     return this._tasks;
   }
 
-  get id(): string {
-    return this._id;
+  get id(): ProjectId {
+    return this._id !== undefined ? this._id : null;
   }
 
   get date(): Date {
@@ -30,11 +28,7 @@ export class ProjectEntity implements ProjectInterface {
     return this._name;
   }
 
-  get status(): ExecutionStatus {
-    return this._status;
-  }
-
-  get owner(): AccountEntity {
+  get owner(): AccountId {
     return this._owner;
   }
 }

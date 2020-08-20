@@ -9,8 +9,9 @@ import {Project} from "../../entities/project.entity";
 export default function ProjectAddPage(): JSX.Element {
   const history = useHistory();
   const {dispatchProjectData} = useContext(DataContext);
+  const initProject = new Project('')
   const onFinish = (values: Store): void => {
-    const project = new Project(values.name, new Date())
+    const project = new Project('', values.name)
     dispatchProjectData({
       type: ProjectReducer.Add,
       payload: project
@@ -22,7 +23,7 @@ export default function ProjectAddPage(): JSX.Element {
     <h1>Add Project</h1>
     <Form
       name="basic"
-      initialValues={new Project("", new Date())}
+      initialValues={initProject}
       onFinish={onFinish}
     >
       <Form.Item

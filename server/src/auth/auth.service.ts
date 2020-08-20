@@ -6,10 +6,10 @@ import { AccountEntity } from '../accounts/account.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import TokenPayload from './interfaces/token-payload.interface';
-import CreateRoleDto from '../accounts/create-role.dto';
+import CreateRoleDto from '../accounts/dto/create-role.dto';
 import RoleEntity from '../accounts/role.entity';
 import { DeleteResult, UpdateResult } from "typeorm";
-import UpdateAccountDto from "../accounts/update-account.dto";
+import UpdateAccountDto from "../accounts/dto/update-account.dto";
 
 @Injectable()
 export class AuthService {

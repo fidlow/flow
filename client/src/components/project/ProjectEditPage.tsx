@@ -3,11 +3,11 @@ import React, {useContext, useState} from "react";
 import {DataContext} from "../../common/ProjectData";
 import {Store} from "antd/lib/form/interface";
 import {Badge, Button, Form, Input} from "antd";
-import {getBadgeFromExecutionStatus, getTextFromExecutionStatus} from "../common/utils";
-import CustomTable from "../common/CustomTable";
+import {getBadgeFromExecutionStatus, getTextFromExecutionStatus} from "../elements/ExecutionStatusMappers";
+import CustomTable from "../elements/CustomTable";
 import {ColumnsType} from "antd/lib/table";
-import {TaskInterface} from "../../common/TaskInterface";
-import {ExecutionStatus} from "../../common/Enums";
+import {TaskInterface} from "../../commonFromServer/TaskInterface";
+import {ExecutionStatus} from "../../common/ExecutionStatus";
 import {ProjectReducer} from "../../reducers";
 
 export default function ProjectEditPage(): JSX.Element {
@@ -57,8 +57,10 @@ export default function ProjectEditPage(): JSX.Element {
         dataIndex: 'manager',
       }
     ];
-    const loadAddTaskPage = (): void => history.push(`/edit-project/${idProject}/add-task`);
-    const onClickRow = (task: TaskInterface): void => setRemovingTaskId(task.id);
+    const loadAddTaskPage = (): void => history.push(`/project/${idProject}/add-task`);
+    const onClickRow = (task: TaskInterface): void => {
+      if(task.id) setRemovingTaskId(task.id);
+    }
     const deleteTask = (): void => {
       project.deleteTaskById(removingTaskId);
       dispatchProjectData({
@@ -67,7 +69,7 @@ export default function ProjectEditPage(): JSX.Element {
       })
       setRemovingTaskId("-1");
     }
-    const onDoubleClickRow = (task: TaskInterface): void => history.push(`/edit-project/${idProject}/edit-task/${task.id}`);
+    const onDoubleClickRow = (task: TaskInterface): void => history.push(`/project/${idProject}/task/${task.id}`);
     return <div className="site-layout-content">
       <h1>Edit Project</h1>
       <Form

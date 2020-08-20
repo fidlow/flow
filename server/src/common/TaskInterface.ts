@@ -1,7 +1,7 @@
 import { ExecutionStatus } from "./ExecutionStatus";
 
 export interface TaskInterface {
-  id: string;
+  id?: string;
   name: string;
   endDate: Date;
   status: ExecutionStatus;

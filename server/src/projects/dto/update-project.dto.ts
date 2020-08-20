@@ -1,7 +1,7 @@
-import { ExecutionStatus } from "../../common/ExecutionStatus";
+import { ExecutionStatus } from '../../common/ExecutionStatus';
+import { Type } from 'class-transformer';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ProjectEntity } from "../project.entity";
-import { Type } from "class-transformer";
-import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 
 export default class UpdateProjectDto implements Partial<ProjectEntity>{
   @IsOptional()

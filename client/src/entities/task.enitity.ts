@@ -1,12 +1,12 @@
-import {generateId} from "../components/common/utils";
-import {TaskInterface} from "../common/TaskInterface";
-import {ExecutionStatus} from "../common/Enums";
+import {TaskInterface} from "../commonFromServer/TaskInterface";
+import {ExecutionStatus} from "../common/ExecutionStatus";
 
 export class Task implements TaskInterface{
   endDate: Date = new Date();
-  id: string = generateId();
+  id?: string;
   manager = "";
   name = "";
   status: ExecutionStatus = ExecutionStatus.NotRunning;
   jobs?: string[];
+
 }

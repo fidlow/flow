@@ -1,8 +1,8 @@
 import {PresetStatusColorType} from "antd/lib/_util/colors";
-import {ExecutionStatus} from "../../common/Enums";
+import {ExecutionStatus} from "../../common/ExecutionStatus";
 
-export function getTextFromExecutionStatus(projectStatus: ExecutionStatus): string {
-  switch (projectStatus) {
+export function getTextFromExecutionStatus(executionStatus: ExecutionStatus): string {
+  switch (executionStatus) {
     case (ExecutionStatus.Finished):
       return "Finished";
     case (ExecutionStatus.Processing):
@@ -16,8 +16,8 @@ export function getTextFromExecutionStatus(projectStatus: ExecutionStatus): stri
   }
 }
 
-export function getBadgeFromExecutionStatus(projectStatus: ExecutionStatus): PresetStatusColorType {
-  switch (projectStatus) {
+export function getBadgeFromExecutionStatus(executionStatus: ExecutionStatus): PresetStatusColorType {
+  switch (executionStatus) {
     case (ExecutionStatus.Finished):
       return "success";
     case (ExecutionStatus.Processing):

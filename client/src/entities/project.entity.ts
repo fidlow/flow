@@ -1,17 +1,19 @@
-import {ProjectInterface} from "../common/ProjectInterface";
-import {generateId} from "../components/common/utils";
-import {ExecutionStatus} from "../common/Enums";
+import {ExecutionStatus} from "../common/ExecutionStatus";
 import {Task} from "./task.enitity";
+import { AccountId } from "../commonFromServer/AccountInterface";
+import { ProjectInterface } from "../commonFromServer/ProjectInterface";
 
 export class Project implements ProjectInterface {
   date: Date;
-  id: string = generateId();
+  id?: string;
   name: string;
+  owner: AccountId;
   tasks?: Task[];
 
-  constructor(name = "", date: Date = new Date()) {
+  constructor(owner: AccountId, name = "", date: Date = new Date()) {
     this.name = name;
     this.date = date;
+    this.owner = owner;
   }
 
   get status(): ExecutionStatus {

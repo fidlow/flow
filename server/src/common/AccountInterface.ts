@@ -1,7 +1,9 @@
 export interface AccountInterface {
-  id: string;
+  id?: string;
   email: string,
   name: string,
   password: string,
 
 }
+
+export type AccountId = string;

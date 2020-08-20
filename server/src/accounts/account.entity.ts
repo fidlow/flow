@@ -1,7 +1,6 @@
-import { Expose} from 'class-transformer';
+import { Expose } from "class-transformer";
 import RoleEntity from "./role.entity";
-import { AccountInterface } from "../common/AccountInterface";
-export type AccountId = string;
+import { AccountId, AccountInterface } from "../common/AccountInterface";
 
 export class AccountEntity implements AccountInterface {
 

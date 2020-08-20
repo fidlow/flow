@@ -12,4 +12,23 @@ export class AccountMapper {
   static mapRoleToDomain(role: RoleOrmEntity): RoleEntity {
     return new RoleEntity(role.id, role.name);
   }
+
+  static mapRoleToOrmEntity(role: RoleEntity): RoleOrmEntity {
+    const roleOrmEntity = new RoleOrmEntity();
+    if(role.id) roleOrmEntity.id = role.id;
+    if(role.name) roleOrmEntity.name = role.name;
+    return  roleOrmEntity;
+  }
+
+  static mapAccountToOrmEntity(account: AccountEntity): AccountOrmEntity {
+    const accountOrmEntity = new AccountOrmEntity();
+    if(account.id) accountOrmEntity.accountId = account.id;
+    if(account.name) accountOrmEntity.name = account.name;
+    if(account.email) accountOrmEntity.email = account.email;
+    if(account.password) accountOrmEntity.password = account.password;
+    if(account.roles) {
+      accountOrmEntity.roles = account.roles.map(role => this.mapRoleToOrmEntity(role));
+    }
+    return accountOrmEntity;
+  }
 }

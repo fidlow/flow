@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import {ProjectOrmEntity} from "./project.orm-entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {DeleteResult, Repository, UpdateResult} from "typeorm";
-import { ProjectEntity } from "./project.entity";
+import { ProjectEntity} from "./project.entity";
 import { ProjectMapper } from "./project.mapper";
 import CreateProjectDto from "./dto/create-project.dto";
-import { AccountEntity, AccountId } from "../accounts/account.entity";
+import { AccountEntity} from "../accounts/account.entity";
 import { AccountOrmEntity } from "../accounts/account.orm-entity";
 import UpdateProjectDto from "./dto/update-project.dto";
 import { type } from "os";
+import { AccountId } from "../common/AccountInterface";
+import { ProjectId } from "../common/ProjectInterface";
 
 @Injectable()
 export class ProjectsService {
@@ -27,19 +29,17 @@ export class ProjectsService {
       return await this._projectRepository.findOne(id);
   }
 
-  async create(project: CreateProjectDto, accountId: AccountId): Promise<ProjectEntity> {
+  async create(project: CreateProjectDto, accountId: AccountId): Promise<ProjectId> {
     const accountOrmEntity = await this._accountRepository.findOne({accountId});
-    const newProject = await this._projectRepository.create({name: project.name, owner: accountOrmEntity});
-    await this._projectRepository.save(newProject);
-    return ProjectMapper.mapToDomain(newProject);
+    const newProject = ProjectMapper.mapToOrmEntity(project);
+    newProject.owner = accountOrmEntity;
+    const newProjectFromDb = await this._projectRepository.save(newProject);
+    return newProjectFromDb.id;
   }
 
   async update(id: string, project: UpdateProjectDto): Promise<UpdateResult> {
-    const projectOrmEntity = await this._projectRepository.findOne(id);
-    if(project.name) projectOrmEntity.name = project.name;
-    if(project.status) projectOrmEntity.status = project.status;
-    if(project.date) projectOrmEntity.date = project.date.getTime().toString();
-    return await this._projectRepository.update(id, projectOrmEntity);
+    const updateProject: Partial<ProjectOrmEntity> = ProjectMapper.mapToOrmEntity(project);
+    return await this._projectRepository.update(id, updateProject);
   }
 
   async delete(id: string): Promise<DeleteResult> {

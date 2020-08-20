@@ -5,11 +5,18 @@ import { AccountMapper } from '../accounts/account.mapper';
 export class ProjectMapper {
   static mapToDomain(projectOrmEntity: ProjectOrmEntity): ProjectEntity {
     return new ProjectEntity(
-      projectOrmEntity.id,
       new Date(projectOrmEntity.date),
       projectOrmEntity.name,
-      projectOrmEntity.status,
-      AccountMapper.mapAccountToDomain(projectOrmEntity.owner),
+      projectOrmEntity.owner.accountId,
+      projectOrmEntity.id,
     );
+  }
+
+  static mapToOrmEntity(project: Partial<ProjectEntity>): ProjectOrmEntity {
+    const projectOrmEntity = new ProjectOrmEntity();
+    if(project.id) projectOrmEntity.id = project.id;
+    if(project.name) projectOrmEntity.name = project.name;
+    if(project.date) projectOrmEntity.date = project.date.getTime().toString();
+    return projectOrmEntity;
   }
 }

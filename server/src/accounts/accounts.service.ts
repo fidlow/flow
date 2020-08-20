@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {AccountOrmEntity} from "./account.orm-entity";
 import {DeleteResult, Repository, UpdateResult} from "typeorm";
-import CreateAccountDto from "./create-account.dto";
 import {AccountEntity} from "./account.entity";
 import {AccountMapper} from "./account.mapper";
 import { RoleOrmEntity } from "./role.orm-entity";
 import RoleEntity from "./role.entity";
-import UpdateAccountDto from "./update-account.dto";
+import UpdateAccountDto from "./dto/update-account.dto";
+import RegisterDto from "../auth/dto/register.dto";
 
 @Injectable()
 export class AccountsService {
@@ -64,7 +64,7 @@ export class AccountsService {
     return roles.map(AccountMapper.mapRoleToDomain);
   }
 
-  async createEmployee(account: CreateAccountDto): Promise<AccountEntity> {
+  async createEmployee(account: RegisterDto): Promise<AccountEntity> {
     const newAccount = await this._accountRepository.create(account);
     const role = await this._roleRepository.findOne({id: 2});
     newAccount.roles = [role];

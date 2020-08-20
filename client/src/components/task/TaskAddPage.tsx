@@ -3,9 +3,9 @@ import {Redirect, useHistory, useParams} from "react-router-dom";
 import React, {useContext} from "react";
 import {DataContext} from "../../common/ProjectData";
 import {Store} from "antd/lib/form/interface";
-import {ExecutionStatus} from "../../common/Enums";
-import {executionStatuses, generateId, getTextFromExecutionStatus} from "../common/utils";
-import CustomDatePicker from "../common/CustomDatePicker";
+import {ExecutionStatus} from "../../common/ExecutionStatus";
+import {executionStatuses, generateId, getTextFromExecutionStatus} from "../elements/ExecutionStatusMappers";
+import CustomDatePicker from "../elements/CustomDatePicker";
 import dayjs from "dayjs";
 import {ProjectReducer} from "../../reducers";
 
