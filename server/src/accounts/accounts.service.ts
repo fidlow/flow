@@ -71,8 +71,8 @@ export class AccountsService {
     await this._accountRepository.save(newAccount);
     return AccountMapper.mapAccountToDomain(newAccount);
   }
-  // async update(account: Partial<AccountOrmEntity>): Promise<UpdateResult> {
-  //   return await this._accountRepository.update(account.id, account);
+  // async updateTask(account: Partial<AccountOrmEntity>): Promise<UpdateResult> {
+  //   return await this._accountRepository.updateTask(account.id, account);
   // }
   // async delete(id: string): Promise<DeleteResult> {
   //   return await this._accountRepository.delete(id);

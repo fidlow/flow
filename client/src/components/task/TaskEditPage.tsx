@@ -1,6 +1,5 @@
 import {Redirect, useHistory, useParams} from "react-router-dom";
-import React, {useContext} from "react";
-import {DataContext} from "../../common/ProjectData";
+import React from "react";
 import {Button, Form, Input, Select} from "antd";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
 import CustomDatePicker from "../elements/CustomDatePicker";
@@ -8,34 +7,33 @@ import {executionStatuses, getTextFromExecutionStatus} from "../elements/Executi
 import {Store} from "antd/lib/form/interface";
 import dayjs from "dayjs";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons/lib";
-import {ProjectReducer} from "../../reducers";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../StoreProvider";
+import { TaskStoreType } from "../../store/TaskStore";
 
-export function TaskEditPage(): JSX.Element {
-  const {idProject, idTask } = useParams();
+function TaskEditPage(): JSX.Element {
+  const { projectId, taskId } = useParams();
   const history = useHistory();
   const {Option} = Select;
-  const {dataProjectState, dispatchProjectData} = useContext(DataContext);
-  const project = dataProjectState.find((p) => p.id === idProject);
-  const task = project?.tasks?.find((t) => t.id === idTask);
-  if (project === undefined || task === undefined || idTask === undefined) {
+  const { projectsStore: { projects } } = useStore();
+  const project = projects.find((p) => p.id === projectId);
+  const task = project?.tasks?.find((t) => t.id === taskId);
+  if (project === undefined || task === undefined || taskId === undefined) {
     return <Redirect to="/"/>
   } else {
     const onFinish = (values: Store): void => {
-      const indexTask = project.tasks?.findIndex((p) => p.id === idTask);
+      const indexTask = project.tasks?.findIndex((p) => p.id === taskId);
       if(project.tasks && indexTask !== undefined && indexTask !== -1 ) {
-        project.tasks[indexTask] = {
-          id: idTask,
-          name: values.name,
-          endDate: values.endDate.toDate(),
-          status: values.status,
-          manager: values.manager,
-          jobs: values.jobs,
-        };
-        dispatchProjectData({
-          type: ProjectReducer.Update,
-          payload: project
-        });
-        history.push(`/edit-project/${idProject}`)
+        project.updateTask({...task, ...values as TaskStoreType, endDate: values.endDate.toDate()})
+        // project.tasks.[indexTask] = {
+        //   id: idTask,
+        //   name: values.name,
+        //   endDate: values.endDate.toDate(),
+        //   status: values.status,
+        //   manager: values.manager,
+        //   jobs: values.jobs,
+        // };
+        history.push(`/project/${projectId}`)
       }
     };
     return <div className="site-layout-content">
@@ -135,3 +133,4 @@ export function TaskEditPage(): JSX.Element {
       </Form></div>
   }
 }
+export default observer(TaskEditPage)

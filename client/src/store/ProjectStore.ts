@@ -1,15 +1,6 @@
 import { cast, destroy, getParent, Instance, SnapshotOrInstance, types } from "mobx-state-tree";
 import { ExecutionStatus } from "../common/ExecutionStatus";
-import { ProjectId } from "../commonFromServer/ProjectInterface";
-
-const TaskStore = types.model("Task", {
-  id: types.identifier,
-  endDate: types.Date,
-  name: types.string,
-  manager: types.string,
-  status: types.number,
-  jobs: types.optional(types.array(types.string), [])
-});
+import { TaskStore, TaskStoreType } from "./TaskStore";
 
 const ProjectStore = types
   .model("Project", {
@@ -40,6 +31,19 @@ const ProjectStore = types
     addTask(task: SnapshotOrInstance<typeof TaskStore>): void {
       self.tasks.push(task);
     },
+    removeTask(task: TaskStoreType): void {
+      destroy(task);
+    },
+    updateTask(task: TaskStoreType): void {
+      const index = self.tasks.findIndex((p) => p.id === task.id);
+      self.tasks[index] = task;
+    },
+    // update(project: Instance<typeof self>): void {
+    //   Object.keys(project).forEach(key => {
+    //     self[key] = cast(project[key])
+    //   })
+    //   Object.entries(project).forEach(([key,value]) => self[key]=value);
+    // },
     remove() {
       getParent<ProjectsStoreType>(self, 2).removeProject(cast(self));
     }
@@ -51,17 +55,18 @@ const ProjectsStore = types
   })
   .actions(self => ({
     addProject(project: SnapshotOrInstance<typeof ProjectStore>): void {
-      self.projects.push(project);
+      const project2 = {...project, id: 'asdasdasdad', date: Date.now(), owner:'aaaaaa' };
+      self.projects.push(cast(project2));
+    },
+    updateProject(project: ProjectStoreType): void {
+      const index = self.projects.findIndex((p) => p.id === project.id);
+      self.projects[index] = project;
     },
     removeProject(project: ProjectStoreType){
       destroy(project);
-    },
-    deleteProjectById(projectId: ProjectId): void {
-      self.projects.replace(self.projects.filter(p => p.id !== projectId));
     }
   }));
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export type ProjectStoreType = Instance<typeof ProjectStore>;
-export type ProjectsStoreType = Instance<typeof ProjectsStore>;
+type ProjectsStoreType = Instance<typeof ProjectsStore>;
 export default ProjectsStore;

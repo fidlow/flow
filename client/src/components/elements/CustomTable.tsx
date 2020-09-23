@@ -8,8 +8,8 @@ import { RootStoreModel } from "../../store/RootStore";
 import React from "react";
 import { ProjectStoreType } from "../../store/ProjectStore";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default function CustomTable<T extends object>(props: {
+
+export default function CustomTable<T extends Partial<RootStoreModel>>(props: {
   dataSource?: T[] ;
   columns: ColumnsType<T>;
   onClickRow?(record: T): void;

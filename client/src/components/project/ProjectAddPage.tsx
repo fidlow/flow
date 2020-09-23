@@ -1,21 +1,17 @@
 import {useHistory} from "react-router-dom";
-import React, {useContext} from "react";
-import {DataContext} from "../../common/ProjectData";
+import React from "react";
 import {Store} from "antd/lib/form/interface";
 import {Button, Form, Input} from "antd";
-import {ProjectReducer} from "../../reducers";
 import {Project} from "../../entities/project.entity";
+import { useStore } from "../StoreProvider";
+import { ProjectStoreType } from "../../store/ProjectStore";
 
 export default function ProjectAddPage(): JSX.Element {
   const history = useHistory();
-  const {dispatchProjectData} = useContext(DataContext);
+  const { projectsStore } = useStore();
   const initProject = new Project('')
   const onFinish = (values: Store): void => {
-    const project = new Project('', values.name)
-    dispatchProjectData({
-      type: ProjectReducer.Add,
-      payload: project
-    });
+    projectsStore.addProject(values as ProjectStoreType);
     history.push('/')
   };
 

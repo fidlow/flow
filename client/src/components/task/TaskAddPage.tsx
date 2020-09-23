@@ -1,20 +1,21 @@
 import {Button, Form, Input, Select} from "antd";
 import {Redirect, useHistory, useParams} from "react-router-dom";
-import React, {useContext} from "react";
-import {DataContext} from "../../common/ProjectData";
+import React from "react";
 import {Store} from "antd/lib/form/interface";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
 import {executionStatuses, generateId, getTextFromExecutionStatus} from "../elements/ExecutionStatusMappers";
 import CustomDatePicker from "../elements/CustomDatePicker";
 import dayjs from "dayjs";
-import {ProjectReducer} from "../../reducers";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../StoreProvider";
 
-export default function TaskAddPage(): JSX.Element {
-  const {idProject} = useParams();
+function TaskAddPage(): JSX.Element {
+  const {projectId} = useParams();
   const history = useHistory();
   const {Option} = Select;
-  const {dataProjectState, dispatchProjectData} = useContext(DataContext);
-  const project = dataProjectState.find((p) => p.id === idProject);
+  const { projectsStore } = useStore();
+  const { projects } = projectsStore;
+  const project = projects.find((p) => p.id === projectId);
   if (project === undefined) {
     return <Redirect to="/"/>
   } else {
@@ -26,11 +27,7 @@ export default function TaskAddPage(): JSX.Element {
         status: values.status,
         endDate: values.endDate.toDate()
       });
-      dispatchProjectData({
-        type: ProjectReducer.Update,
-        payload: project
-      });
-      history.push(`/edit-project/${idProject}`)
+      history.push(`/project/${projectId}`)
     };
     return <div className="site-layout-content">
       <h1>Add Task</h1>
@@ -79,3 +76,4 @@ export default function TaskAddPage(): JSX.Element {
   }
 
 }
+export default observer(TaskAddPage)

@@ -1,33 +1,27 @@
 import {Redirect, useHistory, useParams} from "react-router-dom";
-import React, {useContext, useState} from "react";
-import {DataContext} from "../../common/ProjectData";
+import React, {useState} from "react";
 import {Store} from "antd/lib/form/interface";
 import {Badge, Button, Form, Input} from "antd";
 import {getBadgeFromExecutionStatus, getTextFromExecutionStatus} from "../elements/ExecutionStatusMappers";
 import CustomTable from "../elements/CustomTable";
 import {ColumnsType} from "antd/lib/table";
-import {TaskInterface} from "../../commonFromServer/TaskInterface";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
-import {ProjectReducer} from "../../reducers";
+import { useStore } from "../StoreProvider";
+import { TaskStoreType } from "../../store/TaskStore";
+import { ProjectStoreType } from "../../store/ProjectStore";
+import { observer } from "mobx-react-lite";
 
-export default function ProjectEditPage(): JSX.Element {
-  const {idProject} = useParams();
+function ProjectEditPage(): JSX.Element {
+  const {projectId} = useParams();
   const history = useHistory();
-  const {dataProjectState, dispatchProjectData} = useContext(DataContext);
-  const project = dataProjectState.find((p) => p.id === idProject);
+  const { projectsStore } = useStore();
+  const { projects } = projectsStore;
+  const project = projects.find((p) => p.id === projectId);
   const [removingTaskId, setRemovingTaskId] = useState<string>("-1")
   if (project === undefined) {
     return <Redirect to="/"/>
   } else {
-    const onFinish = (values: Store): void => {
-      project.name = values.name;
-      dispatchProjectData({
-        type: ProjectReducer.Update,
-        payload: project
-      });
-      history.push('/')
-    };
-    const taskColumns: ColumnsType<TaskInterface> = [
+    const taskColumns: ColumnsType<TaskStoreType> = [
       {
         title: 'Name',
         dataIndex: 'name',
@@ -57,19 +51,20 @@ export default function ProjectEditPage(): JSX.Element {
         dataIndex: 'manager',
       }
     ];
-    const loadAddTaskPage = (): void => history.push(`/project/${idProject}/add-task`);
-    const onClickRow = (task: TaskInterface): void => {
+    const loadAddTaskPage = (): void => history.push(`/project/${projectId}/add-task`);
+    const onClickRow = (task: TaskStoreType): void => {
       if(task.id) setRemovingTaskId(task.id);
     }
+    const onDoubleClickRow = (task: TaskStoreType): void => history.push(`/project/${projectId}/task/${task.id}`);
     const deleteTask = (): void => {
-      project.deleteTaskById(removingTaskId);
-      dispatchProjectData({
-        type: ProjectReducer.Update,
-        payload: project
-      })
+      const taskToRemove = project.tasks.find( (t) => t.id === removingTaskId )
+      if(taskToRemove) taskToRemove.remove();
       setRemovingTaskId("-1");
     }
-    const onDoubleClickRow = (task: TaskInterface): void => history.push(`/project/${idProject}/task/${task.id}`);
+    const onFinish = (values: Store): void => {
+      projectsStore.updateProject({...project, ...values as ProjectStoreType});
+      history.push('/')
+    };
     return <div className="site-layout-content">
       <h1>Edit Project</h1>
       <Form
@@ -106,7 +101,7 @@ export default function ProjectEditPage(): JSX.Element {
         {removingTaskId !== "-1" &&
         <Button onClick={deleteTask} type="primary" danger style={{marginLeft: 10}}>
           Delete Task</Button>}
-        <CustomTable dataSource={project.tasks} columns={taskColumns} onClickRow={onClickRow}
+        <CustomTable dataSource={project.tasks.toJS()} columns={taskColumns} onClickRow={onClickRow}
                      onDoubleClickRow={onDoubleClickRow}/>
         <Form.Item>
           <Button type="primary" htmlType="submit">
@@ -119,3 +114,4 @@ export default function ProjectEditPage(): JSX.Element {
   }
 
 }
+export default observer(ProjectEditPage)
