@@ -63,30 +63,30 @@ const projectDataSourceArray: ProjectInterface[] = [
   },
 ];
 
-export const projectDataSource: Project[] = projectDataSourceArray.map(p => {
+const projectDataSource: Project[] = projectDataSourceArray.map(p => {
   const project = new Project(p.owner, p.name, p.date);
   project.id = p.id;
   project.tasks = p.tasks;
   return project;
 });
 
-export interface ProjectContext {
+interface ProjectContext {
   dataProjectState: Project[];
   dispatchProjectData: Dispatch<ProjectReduceAction>;
 }
 
-export const DataContext = React.createContext<ProjectContext>({
+const DataContext = React.createContext<ProjectContext>({
   dataProjectState: new Array<Project>(),
   dispatchProjectData: () => new Array<Project>()
 });
 
-export enum TaskReducer {
+enum TaskReducer {
   Add = "ADD",
   Update = "UPDATE",
   Delete = "DELETE"
 }
 
-export interface TaskReduceAction extends Action {
+interface TaskReduceAction extends Action {
   type: TaskReducer;
   payload: TaskInterface;
 }

@@ -15,7 +15,7 @@ function TaskEditPage(): JSX.Element {
   const { projectId, taskId } = useParams();
   const history = useHistory();
   const {Option} = Select;
-  const { projectsStore: { projects } } = useStore();
+  const { projectsStore: { projects }, managersStore: {managers} } = useStore();
   const project = projects.find((p) => p.id === projectId);
   const task = project?.tasks?.find((t) => t.id === taskId);
   if (project === undefined || task === undefined || taskId === undefined) {
@@ -24,15 +24,7 @@ function TaskEditPage(): JSX.Element {
     const onFinish = (values: Store): void => {
       const indexTask = project.tasks?.findIndex((p) => p.id === taskId);
       if(project.tasks && indexTask !== undefined && indexTask !== -1 ) {
-        project.updateTask({...task, ...values as TaskStoreType, endDate: values.endDate.toDate()})
-        // project.tasks.[indexTask] = {
-        //   id: idTask,
-        //   name: values.name,
-        //   endDate: values.endDate.toDate(),
-        //   status: values.status,
-        //   manager: values.manager,
-        //   jobs: values.jobs,
-        // };
+        project.updateTask({...task, ...values as TaskStoreType,endDate: values.endDate.toDate()})
         history.push(`/project/${projectId}`)
       }
     };
@@ -59,7 +51,7 @@ function TaskEditPage(): JSX.Element {
         <Form.Item
           label="Status"
           name="status"
-          rules={[{required: true, message: 'Please End Date of your task!'}]}
+          rules={[{required: true, message: 'Please Status of your task!'}]}
         >
           <Select>
             {executionStatuses.map(s =>
@@ -71,7 +63,10 @@ function TaskEditPage(): JSX.Element {
           name="manager"
           rules={[{required: true, message: 'Please input manager of your task!'}]}
         >
-          <Input/>
+          <Select>
+            {managers.map(m =>
+              <Option key={m.id} value={m.id}>{m.name}</Option>)}
+          </Select>
         </Form.Item>
         <Form.List name="jobs">
           {(fields, { add, remove }): JSX.Element => {

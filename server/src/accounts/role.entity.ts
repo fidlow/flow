@@ -8,7 +8,7 @@ export default class RoleEntity {
     return this._id;
   }
 
-  @Expose({groups: ["get"]})
+  @Expose({ groups: ['get'] })
   get name(): string {
     return this._name;
   }

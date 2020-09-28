@@ -39,7 +39,7 @@ export class AuthController {
       return new AuthResponse(true,  e.message);
     }
   }
-
+  @SerializeOptions({groups: ['get']})
   @UseGuards(LocalAuthenticationGuard)
   @HttpCode(200)
   @Post('login')

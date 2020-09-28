@@ -7,6 +7,7 @@ import ProjectAddPage from "./project/ProjectAddPage";
 import ProjectEditPage from "./project/ProjectEditPage";
 import TaskAddPage from "./task/TaskAddPage";
 import TaskEditPage  from "./task/TaskEditPage";
+import AccountEditPage from "./account/AccountEditPage";
 
 export function Layout(): JSX.Element {
   const { Footer, Sider, Content } = LayoutAntd;
@@ -15,7 +16,9 @@ export function Layout(): JSX.Element {
       <BrowserRouter>
         <Sider>
           <div className="logo">ProjectFlow</div>
-          <MainMenu/>
+          <Content>
+            <MainMenu/>
+          </Content>
         </Sider>
         <LayoutAntd>
           <Content className="content">
@@ -36,6 +39,11 @@ export function Layout(): JSX.Element {
                   exact
                   path="/project/:projectId/task/:taskId"
                   component={TaskEditPage}
+                />
+                <Route
+                  exact
+                  path="/account"
+                  component={AccountEditPage}
                 />
               </Switch>
           </Content>

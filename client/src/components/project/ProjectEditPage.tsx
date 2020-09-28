@@ -10,11 +10,12 @@ import { useStore } from "../StoreProvider";
 import { TaskStoreType } from "../../store/TaskStore";
 import { ProjectStoreType } from "../../store/ProjectStore";
 import { observer } from "mobx-react-lite";
+import { AccountStoreType } from "../../store/AccountStore";
 
 function ProjectEditPage(): JSX.Element {
   const {projectId} = useParams();
   const history = useHistory();
-  const { projectsStore } = useStore();
+  const { projectsStore, managersStore: {managers} } = useStore();
   const { projects } = projectsStore;
   const project = projects.find((p) => p.id === projectId);
   const [removingTaskId, setRemovingTaskId] = useState<string>("-1")
@@ -49,6 +50,9 @@ function ProjectEditPage(): JSX.Element {
       {
         title: 'Manager',
         dataIndex: 'manager',
+        render: (managerId: string): string => (
+          (managers.find((m)=> m.id===managerId) as AccountStoreType).name
+        )
       }
     ];
     const loadAddTaskPage = (): void => history.push(`/project/${projectId}/add-task`);
@@ -86,7 +90,6 @@ function ProjectEditPage(): JSX.Element {
             {project.date.toLocaleDateString('ru')}
           </span>
         </Form.Item>
-
         <Form.Item
           label="Status"
         >

@@ -1,4 +1,11 @@
-import { cast, destroy, getParent, Instance, SnapshotOrInstance, types } from "mobx-state-tree";
+import {
+  cast,
+  destroy,
+  getParent,
+  Instance,
+  SnapshotOrInstance,
+  types,
+} from "mobx-state-tree";
 import { ExecutionStatus } from "../common/ExecutionStatus";
 import { TaskStore, TaskStoreType } from "./TaskStore";
 
@@ -8,12 +15,12 @@ const ProjectStore = types
     date: types.Date,
     name: types.string,
     owner: types.string,
-    tasks: types.optional(types.array(TaskStore), [])
+    tasks: types.optional(types.array(TaskStore), []),
   })
-  .views(self => ({
+  .views((self) => ({
     get status() {
       if (self.tasks?.length > 0) {
-        const statuses = self.tasks.map(t => t.status);
+        const statuses = self.tasks.map((t) => t.status);
         if (statuses.indexOf(ExecutionStatus.Aborted) !== -1)
           return ExecutionStatus.Aborted;
         if (statuses.indexOf(ExecutionStatus.Processing) !== -1)
@@ -25,11 +32,12 @@ const ProjectStore = types
         return ExecutionStatus.Error;
       }
       return ExecutionStatus.NotRunning;
-    }
+    },
   }))
-  .actions(self => ({
+  .actions((self) => ({
     addTask(task: SnapshotOrInstance<typeof TaskStore>): void {
-      self.tasks.push(task);
+      const newTask = { ...task, id: "testTaskId" };
+      self.tasks.push(newTask);
     },
     removeTask(task: TaskStoreType): void {
       destroy(task);
@@ -46,25 +54,30 @@ const ProjectStore = types
     // },
     remove() {
       getParent<ProjectsStoreType>(self, 2).removeProject(cast(self));
-    }
+    },
   }));
 
 const ProjectsStore = types
   .model("Projects", {
-    projects: types.optional(types.array(ProjectStore), [])
+    projects: types.optional(types.array(ProjectStore), []),
   })
-  .actions(self => ({
+  .actions((self) => ({
     addProject(project: SnapshotOrInstance<typeof ProjectStore>): void {
-      const project2 = {...project, id: 'asdasdasdad', date: Date.now(), owner:'aaaaaa' };
-      self.projects.push(cast(project2));
+      const newProject = {
+        ...project,
+        id: "testProjectId",
+        date: Date.now(),
+        owner: '1111',
+      };
+      self.projects.push(cast(newProject));
     },
     updateProject(project: ProjectStoreType): void {
       const index = self.projects.findIndex((p) => p.id === project.id);
       self.projects[index] = project;
     },
-    removeProject(project: ProjectStoreType){
+    removeProject(project: ProjectStoreType) {
       destroy(project);
-    }
+    },
   }));
 
 export type ProjectStoreType = Instance<typeof ProjectStore>;

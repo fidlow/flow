@@ -1,12 +1,7 @@
-/* eslint-disable */
-
 import {ColumnsType} from "antd/lib/table";
 import {Table} from "antd";
-import { Project } from "../../entities/project.entity";
-import { Task } from "../../entities/task.enitity";
 import { RootStoreModel } from "../../store/RootStore";
 import React from "react";
-import { ProjectStoreType } from "../../store/ProjectStore";
 
 
 export default function CustomTable<T extends Partial<RootStoreModel>>(props: {

@@ -36,4 +36,4 @@ export function generateId(): string {
 }
 
 export const executionStatuses = Object.keys(ExecutionStatus)
-  .slice(0, Object.values(ExecutionStatus).length / 2).map((key) => Number(key)).filter(s=> {console.log(s); return s!==4;});
+  .slice(0, Object.values(ExecutionStatus).length / 2).map((key) => Number(key)).filter(s=> {return s!==4;});
