@@ -5,16 +5,16 @@ const projectDataSourceArray = [
   {
     id: "1",
     name: "Сделать доставку по договору №123 от 23.05.2020 (с задачами) !!",
-    date: new Date("2020-09-23"),
+    createdDate: new Date("2020-09-23"),
     owner: '1111',
-    tasks: [
+    events: [
       {
         id: "1",
         name: "Принять товар на склад (с работами)",
         endDate: new Date("2020-09-20"),
         manager: '3333',
         status: ExecutionStatus.Finished,
-        jobs: [
+        tasks: [
           "Взять товар",
           "Перенести товар",
           "Положить товар",
@@ -40,34 +40,23 @@ const projectDataSourceArray = [
   {
     id: "2",
     name: "Сделать доставку по договору №323 от 02.05.2020",
-    date: new Date("2020-09-02"),
+    createdDate: new Date("2020-09-02"),
     owner: '1111'
   },
   {
     id: "3",
     name: "Сделать доставку по договору №16 от 15.05.2019",
-    date: new Date("2019-09-15"),
+    createdDate: new Date("2019-09-15"),
     owner: '1111'
   },
   {
     id: "4",
     name: "Сделать доставку по договору №12 от 11.05.2019",
-    date: new Date("2019-09-11"),
+    createdDate: new Date("2019-09-11"),
     owner: '1111'
   }
 ];
 
-const accountDataSourceArray = {
-  id: '1111',
-  email: 'test@test.ru',
-  name: 'Евгений Ганинцев',
-  roles:  [
-    {
-      "id": 1,
-      "name": "admin"
-    }
-  ]
-}
 
 const managersDataSourceArray = [{
   id: '1111',
@@ -86,11 +75,16 @@ const managersDataSourceArray = [{
 ]
 
 export const createStore = (): RootStoreModel => {
+  const userDataStr = localStorage.getItem('user');
+  let userData;
+  if (userDataStr !== null) userData = JSON.parse(userDataStr);
   return RootStore.create({
     projectsStore: {
       projects: projectDataSourceArray
     },
-    userStore: accountDataSourceArray,
+    userStore: {
+      user: userData
+    },
     managersStore: {
       managers: managersDataSourceArray
     },

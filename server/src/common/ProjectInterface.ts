@@ -1,16 +1,16 @@
-import { TaskInterface } from "./TaskInterface";
+import { EventInterface } from "./EventInterface";
 import { AccountId } from "./AccountInterface";
 
 
 export interface ProjectInterface {
     id?: ProjectId;
     name: string;
-    date: Date;
+    createdDate: number;
     owner: AccountId;
-    tasks?: TaskInterface[];
-    // addTask(task: TaskInterface): void;
-    // updateTask(task: TaskInterface): void;
-    // deleteTaskById(taskId: string): void;
+    events?: EventInterface[];
+    // addEvent(event: EventInterface): void;
+    // updateEvent(event: EventInterface): void;
+    // deleteEventById(eventId: string): void;
 }
 
 export type ProjectId = string;

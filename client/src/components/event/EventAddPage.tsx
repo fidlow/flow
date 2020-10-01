@@ -8,9 +8,9 @@ import CustomDatePicker from "../elements/CustomDatePicker";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../StoreProvider";
-import { TaskStoreType } from "../../store/TaskStore";
+import { EventStoreType } from "../../store/EventStore";
 
-function TaskAddPage(): JSX.Element {
+function EventAddPage(): JSX.Element {
   const {projectId} = useParams();
   const history = useHistory();
   const {Option} = Select;
@@ -21,11 +21,11 @@ function TaskAddPage(): JSX.Element {
     return <Redirect to="/"/>
   } else {
     const onFinish = (values: Store): void => {
-      project.addTask({ ...values as TaskStoreType, endDate: values.endDate.toDate()} );
+      project.addEvent({ ...values as EventStoreType, endDate: values.endDate.toDate()} );
       history.push(`/project/${projectId}`)
     };
     return <div className="site-layout-content">
-      <h1>Add Task</h1>
+      <h1>Add Event</h1>
       <Form
         onFinish={onFinish}
         initialValues={{name: '', endDate: dayjs(new Date()), status: ExecutionStatus.NotRunning}}
@@ -33,21 +33,21 @@ function TaskAddPage(): JSX.Element {
         <Form.Item
           label="Name"
           name="name"
-          rules={[{required: true, message: 'Please input name of your task!'}]}
+          rules={[{required: true, message: 'Please input name of your event!'}]}
         >
           <Input/>
         </Form.Item>
         <Form.Item
           label="End Date"
           name="endDate"
-          rules={[{required: true, message: 'Please End Date of your task!'}]}
+          rules={[{required: true, message: 'Please End Date of your event!'}]}
         >
           <CustomDatePicker/>
         </Form.Item>
         <Form.Item
           label="Status"
           name="status"
-          rules={[{required: true, message: 'Please End Date of your task!'}]}
+          rules={[{required: true, message: 'Please End Date of your event!'}]}
         >
           <Select>
             {executionStatuses.map(s =>
@@ -57,7 +57,7 @@ function TaskAddPage(): JSX.Element {
         <Form.Item
           label="Manager"
           name="manager"
-          rules={[{required: true, message: 'Please input manager of your task!'}]}
+          rules={[{required: true, message: 'Please input manager of your event!'}]}
         >
 
           <Select>
@@ -75,4 +75,4 @@ function TaskAddPage(): JSX.Element {
   }
 
 }
-export default observer(TaskAddPage)
+export default observer(EventAddPage)

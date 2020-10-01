@@ -7,7 +7,7 @@ import CustomTable from "../elements/CustomTable";
 import {ColumnsType} from "antd/lib/table";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
 import { useStore } from "../StoreProvider";
-import { TaskStoreType } from "../../store/TaskStore";
+import { EventStoreType } from "../../store/EventStore";
 import { ProjectStoreType } from "../../store/ProjectStore";
 import { observer } from "mobx-react-lite";
 import { AccountStoreType } from "../../store/AccountStore";
@@ -18,11 +18,11 @@ function ProjectEditPage(): JSX.Element {
   const { projectsStore, managersStore: {managers} } = useStore();
   const { projects } = projectsStore;
   const project = projects.find((p) => p.id === projectId);
-  const [removingTaskId, setRemovingTaskId] = useState<string>("-1")
+  const [removingEventId, setRemovingEventId] = useState<string>("-1")
   if (project === undefined) {
     return <Redirect to="/"/>
   } else {
-    const taskColumns: ColumnsType<TaskStoreType> = [
+    const eventColumns: ColumnsType<EventStoreType> = [
       {
         title: 'Name',
         dataIndex: 'name',
@@ -55,15 +55,15 @@ function ProjectEditPage(): JSX.Element {
         )
       }
     ];
-    const loadAddTaskPage = (): void => history.push(`/project/${projectId}/add-task`);
-    const onClickRow = (task: TaskStoreType): void => {
-      if(task.id) setRemovingTaskId(task.id);
+    const loadAddEventPage = (): void => history.push(`/project/${projectId}/add-event`);
+    const onClickRow = (event: EventStoreType): void => {
+      if(event.id) setRemovingEventId(event.id);
     }
-    const onDoubleClickRow = (task: TaskStoreType): void => history.push(`/project/${projectId}/task/${task.id}`);
-    const deleteTask = (): void => {
-      const taskToRemove = project.tasks.find( (t) => t.id === removingTaskId )
-      if(taskToRemove) taskToRemove.remove();
-      setRemovingTaskId("-1");
+    const onDoubleClickRow = (event: EventStoreType): void => history.push(`/project/${projectId}/event/${event.id}`);
+    const deleteEvent = (): void => {
+      const eventToRemove = project.events.find( (t) => t.id === removingEventId )
+      if(eventToRemove) eventToRemove.remove();
+      setRemovingEventId("-1");
     }
     const onFinish = (values: Store): void => {
       projectsStore.updateProject({...project, ...values as ProjectStoreType});
@@ -87,7 +87,7 @@ function ProjectEditPage(): JSX.Element {
           label="Date"
         >
           <span>
-            {project.date.toLocaleDateString('ru')}
+            {project.date?.toLocaleDateString('ru')}
           </span>
         </Form.Item>
         <Form.Item
@@ -98,13 +98,13 @@ function ProjectEditPage(): JSX.Element {
             {getTextFromExecutionStatus(project.status)}
           </span>
         </Form.Item>
-        <Button type="primary" onClick={loadAddTaskPage}>
-          Add Task
+        <Button type="primary" onClick={loadAddEventPage}>
+          Add Event
         </Button>
-        {removingTaskId !== "-1" &&
-        <Button onClick={deleteTask} type="primary" danger style={{marginLeft: 10}}>
-          Delete Task</Button>}
-        <CustomTable dataSource={project.tasks.toJS()} columns={taskColumns} onClickRow={onClickRow}
+        {removingEventId !== "-1" &&
+        <Button onClick={deleteEvent} type="primary" danger style={{marginLeft: 10}}>
+          Delete Event</Button>}
+        <CustomTable dataSource={project.events.toJS()} columns={eventColumns} onClickRow={onClickRow}
                      onDoubleClickRow={onDoubleClickRow}/>
         <Form.Item>
           <Button type="primary" htmlType="submit">

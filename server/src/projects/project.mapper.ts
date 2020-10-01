@@ -1,11 +1,10 @@
 import { ProjectOrmEntity } from './project.orm-entity';
 import { ProjectEntity } from './project.entity';
-import { AccountMapper } from '../accounts/account.mapper';
 
 export class ProjectMapper {
   static mapToDomain(projectOrmEntity: ProjectOrmEntity): ProjectEntity {
     return new ProjectEntity(
-      new Date(projectOrmEntity.date),
+      Number(projectOrmEntity.createdDate),
       projectOrmEntity.name,
       projectOrmEntity.owner.accountId,
       projectOrmEntity.id,
@@ -16,7 +15,7 @@ export class ProjectMapper {
     const projectOrmEntity = new ProjectOrmEntity();
     if(project.id) projectOrmEntity.id = project.id;
     if(project.name) projectOrmEntity.name = project.name;
-    if(project.date) projectOrmEntity.date = project.date.getTime().toString();
+    if(project.createdDate) projectOrmEntity.createdDate = project.createdDate.toString();
     return projectOrmEntity;
   }
 }

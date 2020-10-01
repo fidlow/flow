@@ -1,11 +1,11 @@
 import { ExecutionStatus } from "./ExecutionStatus";
 
-export interface TaskInterface {
+export interface EventInterface {
   id?: string;
   name: string;
   endDate: Date;
   status: ExecutionStatus;
   manager: string;
-  jobs?: string[];
+  tasks?: string[];
 }
 

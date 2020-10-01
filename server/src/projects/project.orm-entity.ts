@@ -17,10 +17,10 @@ export class ProjectOrmEntity {
   name: string;
 
   @Column('bigint', {
-    name: 'date',
+    name: 'created_date',
     default: () => "(date_part('epoch', now()) * (1000)::double precision)",
   })
-  date: string;
+  createdDate: string;
 
   @ManyToOne(() => AccountOrmEntity, (account) => account.projects, {
     onDelete: "CASCADE",

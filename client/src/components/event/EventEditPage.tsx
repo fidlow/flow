@@ -9,49 +9,49 @@ import dayjs from "dayjs";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons/lib";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../StoreProvider";
-import { TaskStoreType } from "../../store/TaskStore";
+import { EventStoreType } from "../../store/EventStore";
 
-function TaskEditPage(): JSX.Element {
-  const { projectId, taskId } = useParams();
+function EventEditPage(): JSX.Element {
+  const { projectId, eventId } = useParams();
   const history = useHistory();
   const {Option} = Select;
   const { projectsStore: { projects }, managersStore: {managers} } = useStore();
   const project = projects.find((p) => p.id === projectId);
-  const task = project?.tasks?.find((t) => t.id === taskId);
-  if (project === undefined || task === undefined || taskId === undefined) {
+  const event = project?.events?.find((t) => t.id === eventId);
+  if (project === undefined || event === undefined || eventId === undefined) {
     return <Redirect to="/"/>
   } else {
     const onFinish = (values: Store): void => {
-      const indexTask = project.tasks?.findIndex((p) => p.id === taskId);
-      if(project.tasks && indexTask !== undefined && indexTask !== -1 ) {
-        project.updateTask({...task, ...values as TaskStoreType,endDate: values.endDate.toDate()})
+      const indexEvent = project.events?.findIndex((p) => p.id === eventId);
+      if(project.events && indexEvent !== undefined && indexEvent !== -1 ) {
+        project.updateEvent({...event, ...values as EventStoreType,endDate: values.endDate.toDate()})
         history.push(`/project/${projectId}`)
       }
     };
     return <div className="site-layout-content">
-      <h1>Edit Task</h1>
+      <h1>Edit Event</h1>
       <Form
         onFinish={onFinish}
-        initialValues={{name: task.name, endDate: dayjs(task.endDate), status: task.status, manager: task.manager, jobs: task.jobs}}
+        initialValues={{name: event.name, endDate: dayjs(event.endDate), status: event.status, manager: event.manager, tasks: event.tasks}}
       >
         <Form.Item
           label="Name"
           name="name"
-          rules={[{required: true, message: 'Please input name of your task!'}]}
+          rules={[{required: true, message: 'Please input name of your event!'}]}
         >
           <Input/>
         </Form.Item>
         <Form.Item
           label="End Date"
           name="endDate"
-          rules={[{required: true, message: 'Please End Date of your task!'}]}
+          rules={[{required: true, message: 'Please End Date of your event!'}]}
         >
           <CustomDatePicker/>
         </Form.Item>
         <Form.Item
           label="Status"
           name="status"
-          rules={[{required: true, message: 'Please Status of your task!'}]}
+          rules={[{required: true, message: 'Please Status of your event!'}]}
         >
           <Select>
             {executionStatuses.map(s =>
@@ -61,21 +61,21 @@ function TaskEditPage(): JSX.Element {
         <Form.Item
           label="Manager"
           name="manager"
-          rules={[{required: true, message: 'Please input manager of your task!'}]}
+          rules={[{required: true, message: 'Please input manager of your event!'}]}
         >
           <Select>
             {managers.map(m =>
               <Option key={m.id} value={m.id}>{m.name}</Option>)}
           </Select>
         </Form.Item>
-        <Form.List name="jobs">
+        <Form.List name="tasks">
           {(fields, { add, remove }): JSX.Element => {
             return (
               <div>
                 {fields.map((field, index) => (
                   <Form.Item
                     style={index === 0 ? {} : {marginLeft:'40px'}}
-                    label={index === 0 ? 'Jobs' : ''}
+                    label={index === 0 ? 'Tasks' : ''}
                     required={false}
                     key={field.key}
                   >
@@ -86,12 +86,12 @@ function TaskEditPage(): JSX.Element {
                         {
                           required: true,
                           whitespace: true,
-                          message: "Please input job or delete this field.",
+                          message: "Please input task or delete this field.",
                         },
                       ]}
                       noStyle
                     >
-                      <Input placeholder="job name" style={{ width: '60%'}} />
+                      <Input placeholder="task name" style={{ width: '60%'}} />
                     </Form.Item>
                     {fields.length > 1 ? (
                       <MinusCircleOutlined
@@ -112,7 +112,7 @@ function TaskEditPage(): JSX.Element {
                     }}
                     style={{ width: '60%', marginLeft:'40px' }}
                   >
-                    <PlusOutlined /> Add jobs
+                    <PlusOutlined /> Add tasks
                   </Button>
                 </Form.Item>
               </div>
@@ -128,4 +128,4 @@ function TaskEditPage(): JSX.Element {
       </Form></div>
   }
 }
-export default observer(TaskEditPage)
+export default observer(EventEditPage)

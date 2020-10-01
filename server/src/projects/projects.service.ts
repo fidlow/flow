@@ -5,10 +5,8 @@ import {DeleteResult, Repository, UpdateResult} from "typeorm";
 import { ProjectEntity} from "./project.entity";
 import { ProjectMapper } from "./project.mapper";
 import CreateProjectDto from "./dto/create-project.dto";
-import { AccountEntity} from "../accounts/account.entity";
 import { AccountOrmEntity } from "../accounts/account.orm-entity";
 import UpdateProjectDto from "./dto/update-project.dto";
-import { type } from "os";
 import { AccountId } from "../common/AccountInterface";
 import { ProjectId } from "../common/ProjectInterface";
 
@@ -17,16 +15,19 @@ export class ProjectsService {
   constructor(@InjectRepository(ProjectOrmEntity) private readonly _projectRepository: Repository<ProjectOrmEntity>,
               @InjectRepository(AccountOrmEntity) private readonly _accountRepository: Repository<AccountOrmEntity>) {
   }
-  async readProjectsByAccount(accountId: AccountId): Promise<ProjectOrmEntity[]> {
+  async readProjectsByAccount(accountId: AccountId): Promise<ProjectEntity[]> {
     const accountOrmEntity = await this._accountRepository.findOne({accountId});
-    return await this._projectRepository.find({owner: accountOrmEntity});
+    const projectsOrm = await this._projectRepository.find({relations: ['owner'], where: {owner: accountOrmEntity}});
+    const res = projectsOrm.map(ProjectMapper.mapToDomain);
+    return res;
   }
   async readAll(): Promise<ProjectOrmEntity[]> {
     return await this._projectRepository.find();
   }
 
-  async readOne(id: string): Promise<ProjectOrmEntity> {
-      return await this._projectRepository.findOne(id);
+  async readOne(id: string): Promise<ProjectEntity> {
+      const project = await this._projectRepository.findOne(id);
+      return  ProjectMapper.mapToDomain(project);
   }
 
   async create(project: CreateProjectDto, accountId: AccountId): Promise<ProjectId> {

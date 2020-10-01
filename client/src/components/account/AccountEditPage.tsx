@@ -2,9 +2,9 @@ import React from "react"
 import { useStore } from "../StoreProvider";
 
 function AccountEditPage(): JSX.Element  {
-  const { userStore } = useStore();
+  const { userStore: {user} } = useStore();
   return <div className="site-layout-content">
-    {userStore.name}
+    My name: {user?.name}
   </div>
 }
 
