@@ -35,7 +35,7 @@ const ProjectStore = types
       }
       return ExecutionStatus.NotRunning;
     },
-    get date(): Date | null {
+    get endDate(): Date | null {
       if (self.events?.length > 0) {
         const events = getSnapshot(self.events)
         const maxEventDate = events
@@ -61,6 +61,7 @@ const ProjectStore = types
     updateEvent(event: EventStoreType): void {
       const index = self.events.findIndex((e) => e.id === event.id);
       self.events[index] = event;
+
     },
     loadProjects() {
       console.log("ok");

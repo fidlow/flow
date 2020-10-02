@@ -46,7 +46,7 @@ export class AuthController {
   async logIn(@Req() req: RequestWithAccount, @Body() account: LoginDto): Promise<AuthResponse> {
     const {user} = req;
     const cookie = this._authService.getCookieWithJwtToken(user.id);
-    req.res.setHeader('Set-Cookie', cookie);
+    req.res?.setHeader('Set-Cookie', cookie);
     return new AuthResponse(false,user);
   }
 
@@ -54,7 +54,7 @@ export class AuthController {
   @HttpCode(200)
   @Post('logout')
   async logOut(@Req() req: RequestWithAccount) {
-    req.res.setHeader('Set-Cookie',  this._authService.getCookieForLogOut());
+    req.res?.setHeader('Set-Cookie',  this._authService.getCookieForLogOut());
   }
 
   @UseGuards(JwtAuthenticationGuard, RolesGuard)

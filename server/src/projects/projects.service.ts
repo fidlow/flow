@@ -27,13 +27,14 @@ export class ProjectsService {
 
   async readOne(id: string): Promise<ProjectEntity> {
       const project = await this._projectRepository.findOne(id);
-      return  ProjectMapper.mapToDomain(project);
+      if(project) return ProjectMapper.mapToDomain(project);
+      else throw Error('NotFound')
   }
 
   async create(project: CreateProjectDto, accountId: AccountId): Promise<ProjectId> {
     const accountOrmEntity = await this._accountRepository.findOne({accountId});
     const newProject = ProjectMapper.mapToOrmEntity(project);
-    newProject.owner = accountOrmEntity;
+    if(accountOrmEntity) newProject.owner = accountOrmEntity;
     const newProjectFromDb = await this._projectRepository.save(newProject);
     return newProjectFromDb.id;
   }

@@ -15,11 +15,11 @@ export class ProjectEntity implements ProjectInterface {
   ) {}
 
   get events(): EventInterface[] {
-    return this._events;
+    return this._events ?? [];
   }
   @Expose()
   get id(): ProjectId {
-    return this._id !== undefined ? this._id : null;
+    return this._id !== undefined ? this._id : "";
   }
   @Expose()
   get createdDate(): number {

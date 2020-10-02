@@ -36,12 +36,12 @@ import { ProjectStoreType } from "../../store/ProjectStore";
      },
      {
        title: "End Date",
-       dataIndex: "date",
+       dataIndex: "endDate",
        defaultSortOrder: "descend",
-       key: "date",
+       key: "endDate",
        sorter: (a, b): number => {
-         if(a.date === null || b.date === null) return 0;
-         return a.date.getTime() - b.date.getTime();
+         if(a.endDate === null || b.endDate === null) return 0;
+         return a.endDate.getTime() - b.endDate.getTime();
        },
        render: (value: Date): string => value ? value.toLocaleDateString("ru") : "No Events"
      },

@@ -87,7 +87,7 @@ function ProjectEditPage(): JSX.Element {
           label="Date"
         >
           <span>
-            {project.date?.toLocaleDateString('ru')}
+            {project.endDate?.toLocaleDateString('ru')}
           </span>
         </Form.Item>
         <Form.Item
