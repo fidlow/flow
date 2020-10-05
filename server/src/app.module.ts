@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountsModule } from './accounts/accounts.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { EventsModule } from './events/events.module';
 import * as Joi from '@hapi/joi';
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import * as Joi from '@hapi/joi';
     ProjectsModule,
     AccountsModule,
     AuthModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

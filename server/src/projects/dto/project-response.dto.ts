@@ -1,6 +1,6 @@
-import {ResponseInterface} from "../common/ResponseInterface";
+import {ResponseInterface} from "../../common/ResponseInterface";
 import {ApiProperty} from "@nestjs/swagger";
-import { ProjectEntity } from "./project.entity";
+import { ProjectEntity } from "../project.entity";
 
 type ProjectResponseTypes = ProjectEntity | ProjectEntity[] | string | null;
 

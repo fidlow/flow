@@ -3,7 +3,7 @@ import { ExecutionStatus } from "./ExecutionStatus";
 export interface EventInterface {
   id?: EventId;
   name: string;
-  endDate: Date;
+  endDate: number;
   status: ExecutionStatus;
   manager: string;
   tasks?: string[];

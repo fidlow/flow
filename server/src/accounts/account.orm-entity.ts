@@ -1,6 +1,7 @@
 import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { RoleOrmEntity } from "./role.orm-entity";
 import { ProjectOrmEntity } from "../projects/project.orm-entity";
+import { EventOrmEntity } from "../events/event.orm-entity";
 
 @Index("account_id_uindex", ["id"], { unique: true })
 @Index("account_pk", ["id"], { unique: true })
@@ -26,4 +27,7 @@ export class AccountOrmEntity {
 
   @OneToMany(() => ProjectOrmEntity, (project) => project.owner)
   projects: ProjectOrmEntity[];
+
+  @OneToMany(() => EventOrmEntity, (event) => event.manager)
+  events: Event[];
 }

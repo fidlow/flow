@@ -4,7 +4,6 @@ import { AccountId } from "../common/AccountInterface";
 import { Expose } from "class-transformer";
 
 export class ProjectEntity implements ProjectInterface {
-  private _events?: EventInterface[];
 
   constructor(
     private _createdDate: number,
@@ -12,14 +11,15 @@ export class ProjectEntity implements ProjectInterface {
     private _owner: AccountId,
     private _id?: ProjectId,
     private _endDate?: number,
+    private _events?: EventInterface[]
   ) {}
-
-  get events(): EventInterface[] {
-    return this._events ?? [];
+  @Expose({groups: ["getOne"]})
+  get events(): EventInterface[] | undefined  {
+    return this._events;
   }
   @Expose()
-  get id(): ProjectId {
-    return this._id !== undefined ? this._id : "";
+  get id(): ProjectId | undefined {
+    return this._id;
   }
   @Expose()
   get createdDate(): number {
@@ -32,5 +32,10 @@ export class ProjectEntity implements ProjectInterface {
   @Expose()
   get owner(): AccountId {
     return this._owner;
+  }
+
+  @Expose()
+  get endDate(): number | undefined {
+    return this._endDate;
   }
 }

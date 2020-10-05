@@ -1,10 +1,7 @@
-import { IsDate, IsString } from "class-validator";
-import { Type } from "class-transformer";
-
+import { IsNumber, IsString } from "class-validator";
 export default class CreateProjectDto {
   @IsString()
   name: string;
-  @IsDate()
-  @Type(() => Date)
-  date: Date;
+  @IsNumber()
+  date: number;
 }

@@ -1,6 +1,7 @@
 
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { AccountOrmEntity } from "../accounts/account.orm-entity";
+import { EventOrmEntity } from "../events/event.orm-entity";
 
 @Index('project_id_uindex', ['id'], { unique: true })
 @Index('project_pk', ['id'], { unique: true })
@@ -28,5 +29,8 @@ export class ProjectOrmEntity {
   })
   @JoinColumn([{ name: "owner", referencedColumnName: "id" }])
   owner: AccountOrmEntity;
+
+  @OneToMany(() => EventOrmEntity, (event) => event.project)
+  events: EventOrmEntity[];
 
 }

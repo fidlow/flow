@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import {ProjectOrmEntity} from "./project.orm-entity";
-import {InjectRepository} from "@nestjs/typeorm";
-import {DeleteResult, Repository, UpdateResult} from "typeorm";
-import { ProjectEntity} from "./project.entity";
+import { Injectable } from "@nestjs/common";
+import { ProjectOrmEntity } from "./project.orm-entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
+import { ProjectEntity } from "./project.entity";
 import { ProjectMapper } from "./project.mapper";
 import CreateProjectDto from "./dto/create-project.dto";
 import { AccountOrmEntity } from "../accounts/account.orm-entity";
@@ -17,18 +17,18 @@ export class ProjectsService {
   }
   async readProjectsByAccount(accountId: AccountId): Promise<ProjectEntity[]> {
     const accountOrmEntity = await this._accountRepository.findOne({accountId});
-    const projectsOrm = await this._projectRepository.find({relations: ['owner'], where: {owner: accountOrmEntity}});
-    const res = projectsOrm.map(ProjectMapper.mapToDomain);
-    return res;
+    const projectsOrmEntity = await this._projectRepository.find({relations: ['owner','events','events.manager'], where: {owner: accountOrmEntity}});
+    return projectsOrmEntity.map(ProjectMapper.mapToDomain);
   }
-  async readAll(): Promise<ProjectOrmEntity[]> {
-    return await this._projectRepository.find();
+  async readAll(): Promise<ProjectEntity[]> {
+    const projectsOrmEntity = await this._projectRepository.find({relations: ['owner']});
+    return projectsOrmEntity.map(ProjectMapper.mapToDomain);
   }
 
-  async readOne(id: string): Promise<ProjectEntity> {
-      const project = await this._projectRepository.findOne(id);
+  async readOne(id: ProjectId): Promise<ProjectEntity> {
+      const project = await this._projectRepository.findOne({relations: ['owner','events','events.manager'], where: {id}});
       if(project) return ProjectMapper.mapToDomain(project);
-      else throw Error('NotFound')
+      else throw Error('NotFoundError')
   }
 
   async create(project: CreateProjectDto, accountId: AccountId): Promise<ProjectId> {
@@ -39,9 +39,9 @@ export class ProjectsService {
     return newProjectFromDb.id;
   }
 
-  async update(id: string, project: UpdateProjectDto): Promise<UpdateResult> {
-    const updateProject: Partial<ProjectOrmEntity> = ProjectMapper.mapToOrmEntity(project);
-    return await this._projectRepository.update(id, updateProject);
+  async update(id: ProjectId, project: UpdateProjectDto): Promise<UpdateResult> {
+    const projectOrmEntity: Partial<ProjectOrmEntity> = ProjectMapper.mapToOrmEntity(project);
+    return await this._projectRepository.update(id, projectOrmEntity);
   }
 
   async delete(id: string): Promise<DeleteResult> {

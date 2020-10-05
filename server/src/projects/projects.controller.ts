@@ -7,19 +7,19 @@ import {
   Param,
   Post,
   Put,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { ProjectOrmEntity } from './project.orm-entity';
+  Req, SerializeOptions,
+  UseGuards
+} from "@nestjs/common";
 import { ProjectsService } from './projects.service';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
-import ProjectResponse from './project-response.dto';
+import { ApiTags } from '@nestjs/swagger';
+import ProjectResponse from './dto/project-response.dto';
 import JwtAuthGuard from '../auth/guards/jwt-auth.guard';
 import RequestWithAccount from '../accounts/request-with-account.interface';
 import CreateProjectDto from './dto/create-project.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import UpdateProjectDto from './dto/update-project.dto';
 import { Roles } from '../auth/roles.decorator';
+import { ProjectId } from "../common/ProjectInterface";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('project')
@@ -38,22 +38,24 @@ export class ProjectsController {
       return new ProjectResponse(true, e.message);
     }
   }
+
   @Get('all')
   @Roles('admin')
   async getAllProjects(): Promise<ProjectResponse> {
     try {
       const res = await this._projectSerivce.readAll();
-      if (!!res) {
+      if (!res) {
         return new ProjectResponse(true, 'NotFoundEntityError');
       }
-      return new ProjectResponse(false, null);
+      return new ProjectResponse(false, res);
     } catch (e) {
       return new ProjectResponse(true, e.message);
     }
   }
 
+  @SerializeOptions({groups: ['getOne']})
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<ProjectResponse> {
+  async getById(@Param('id') id: ProjectId): Promise<ProjectResponse> {
     try {
       const res = await this._projectSerivce.readOne(id);
       if (!res) {
@@ -84,7 +86,7 @@ export class ProjectsController {
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id') id: ProjectId,
     @Body() project: UpdateProjectDto,
   ): Promise<ProjectResponse> {
     try {
@@ -97,7 +99,7 @@ export class ProjectsController {
 
   @HttpCode(200)
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<ProjectResponse> {
+  async delete(@Param('id') id: ProjectId): Promise<ProjectResponse> {
     try {
       const deleteResult = await this._projectSerivce.delete(id);
       if (!deleteResult.affected) return new ProjectResponse(true, 'NotFound');
