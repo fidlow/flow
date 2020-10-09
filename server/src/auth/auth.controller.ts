@@ -138,6 +138,19 @@ export class AuthController {
       return new AuthResponse(true,  e.message);
     }
   }
+
+  @SerializeOptions({groups: ['getManager']})
+  @UseGuards(JwtAuthenticationGuard, RolesGuard)
+  @Get('managers')
+  async getManagers(): Promise<AuthResponse> {
+    try {
+      const createdAccount = await this._authService.getAllAccounts();
+      return new AuthResponse(false, createdAccount);
+    } catch (e) {
+      return new AuthResponse(true,  e.message);
+    }
+  }
+
   @SerializeOptions({groups: ['get']})
   @UseGuards(JwtAuthenticationGuard, RolesGuard)
   @Roles('admin')

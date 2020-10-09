@@ -1,5 +1,5 @@
 import {Redirect, useHistory, useParams} from "react-router-dom";
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
 import {Store} from "antd/lib/form/interface";
 import {Badge, Button, Form, Input} from "antd";
 import {getBadgeFromExecutionStatus, getTextFromExecutionStatus} from "../elements/ExecutionStatusMappers";
@@ -13,14 +13,20 @@ import { observer } from "mobx-react-lite";
 import { AccountStoreType } from "../../store/AccountStore";
 
 function ProjectEditPage(): JSX.Element {
-  const {projectId} = useParams();
+  const {projectId} = useParams<{projectId: string}>();
   const history = useHistory();
-  const { projectsStore, managersStore: {managers} } = useStore();
-  const { projects } = projectsStore;
-  const project = projects.find((p) => p.id === projectId);
+  const { projectsStore } = useStore();
+  const { projects,managers } = projectsStore;
+  const project = projects.find((p: ProjectStoreType) => p.id === projectId);
+  useEffect(() => {
+    projectsStore.loadProjectById(projectId);
+  },[projectId, projectsStore])
   const [removingEventId, setRemovingEventId] = useState<string>("-1")
   if (project === undefined) {
-    return <Redirect to="/"/>
+    return <div className="site-layout-content">
+      <h1>Edit Project</h1>
+      Loading project
+    </div>
   } else {
     const eventColumns: ColumnsType<EventStoreType> = [
       {
@@ -51,7 +57,7 @@ function ProjectEditPage(): JSX.Element {
         title: 'Manager',
         dataIndex: 'manager',
         render: (managerId: string): string => (
-          (managers.find((m)=> m.id===managerId) as AccountStoreType).name
+          (managers.find((m: AccountStoreType)=> m.id===managerId) as AccountStoreType).name
         )
       }
     ];
@@ -61,7 +67,7 @@ function ProjectEditPage(): JSX.Element {
     }
     const onDoubleClickRow = (event: EventStoreType): void => history.push(`/project/${projectId}/event/${event.id}`);
     const deleteEvent = (): void => {
-      const eventToRemove = project.events.find( (t) => t.id === removingEventId )
+      const eventToRemove = project.events.find((e:EventStoreType) => e.id === removingEventId )
       if(eventToRemove) eventToRemove.remove();
       setRemovingEventId("-1");
     }

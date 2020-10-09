@@ -12,17 +12,17 @@ import { useStore } from "../StoreProvider";
 import { EventStoreType } from "../../store/EventStore";
 
 function EventEditPage(): JSX.Element {
-  const { projectId, eventId } = useParams();
+  const { projectId, eventId } = useParams<{projectId: string, eventId: string}>();
   const history = useHistory();
   const {Option} = Select;
-  const { projectsStore: { projects }, managersStore: {managers} } = useStore();
+  const { projectsStore: { projects, managers } } = useStore();
   const project = projects.find((p) => p.id === projectId);
   const event = project?.events?.find((t) => t.id === eventId);
   if (project === undefined || event === undefined || eventId === undefined) {
     return <Redirect to="/"/>
   } else {
     const onFinish = (values: Store): void => {
-      const indexEvent = project.events?.findIndex((p) => p.id === eventId);
+      const indexEvent = project.events?.findIndex((p: EventStoreType) => p.id === eventId);
       if(project.events && indexEvent !== undefined && indexEvent !== -1 ) {
         project.updateEvent({...event, ...values as EventStoreType,endDate: values.endDate.toDate()})
         history.push(`/project/${projectId}`)

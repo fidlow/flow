@@ -1,7 +1,8 @@
 import { IsNumber, IsString } from "class-validator";
-export default class CreateProjectDto {
+import { ProjectEntity } from "../project.entity";
+export default class CreateProjectDto implements Partial<ProjectEntity> {
   @IsString()
   name: string;
   @IsNumber()
-  date: number;
+  createdDate: number;
 }

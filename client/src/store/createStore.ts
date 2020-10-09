@@ -57,36 +57,17 @@ const projectDataSourceArray = [
   }
 ];
 
-
-const managersDataSourceArray = [{
-  id: '1111',
-  email: 'test@test.ru',
-  name: 'Евгений Ганинцев',
-  roles:  [
-    {
-      "id": 1,
-      "name": "admin"
-    }
-  ]
-},
-  {id:'3333', email:'test@test.ru', name: 'Складкин А.О.'},
-  {id:'4444', email:'test@test.ru', name:  "Маркин Д.В."},
-  {id:'5555', email:'test@test.ru', name:  "Правкин З.Ф."},
-]
-
 export const createStore = (): RootStoreModel => {
   const userDataStr = localStorage.getItem('user');
   let userData;
   if (userDataStr !== null) userData = JSON.parse(userDataStr);
   return RootStore.create({
     projectsStore: {
-      projects: projectDataSourceArray
+      projects: projectDataSourceArray,
+      managers: []
     },
     userStore: {
       user: userData
-    },
-    managersStore: {
-      managers: managersDataSourceArray
     },
   });
 };

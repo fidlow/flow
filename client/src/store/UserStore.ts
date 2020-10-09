@@ -12,7 +12,7 @@ const UserStore = types
       localStorage.removeItem('user')
     },
     login: flow(function* (account: SnapshotOrInstance<typeof AccountStore>) {
-      const res = yield Api.post('/auth/login', cast(account));
+      const res = yield Api.login(cast(account));
       if(res.isError === false) {
         self.user=res.message as AccountStoreType;
         localStorage.setItem('user', JSON.stringify(res.message));

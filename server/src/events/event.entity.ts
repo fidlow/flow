@@ -13,7 +13,7 @@ export class EventEntity implements EventInterface {
     private _status: ExecutionStatus,
     private _id?: EventId) {
   }
-
+  @Expose()
   get id(): EventId {
     return this._id ?? "";
   }

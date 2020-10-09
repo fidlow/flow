@@ -19,7 +19,7 @@ export class AccountEntity implements AccountInterface {
   get email(): string {
     return this._email;
   }
-  @Expose({groups: ["get"]})
+  @Expose({groups: ["get","getManager"]})
   get name(): string {
     return this._name;
   }

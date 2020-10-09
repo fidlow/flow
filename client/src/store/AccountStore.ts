@@ -5,7 +5,7 @@ import { UserStoreType } from "./UserStore";
 const AccountStore = types
   .model("Account", {
     id: types.string,
-    email: types.string,
+    email: types.optional(types.string, ""),
     name: types.string,
     roles: types.optional(types.array(RoleStore),[])
   })

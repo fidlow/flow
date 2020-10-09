@@ -23,7 +23,7 @@ import { ProjectStoreType } from "../../store/ProjectStore";
   const [removingProjectId, setRemovingProjectId] = useState<string>("-1");
   const deleteProject = (): void => {
     const projectToRemove = projects.find(
-      p => p.id === removingProjectId
+      (p:ProjectStoreType) => p.id === removingProjectId
     )
     if(projectToRemove) projectToRemove.remove();
     setRemovingProjectId("-1");

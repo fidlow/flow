@@ -9,14 +9,16 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../StoreProvider";
 import { EventStoreType } from "../../store/EventStore";
+import { ProjectStoreType } from "../../store/ProjectStore";
+import { AccountStoreType } from "../../store/AccountStore";
 
 function EventAddPage(): JSX.Element {
-  const {projectId} = useParams();
+  const {projectId} = useParams<{projectId: string}>();
   const history = useHistory();
   const {Option} = Select;
-  const { projectsStore, managersStore: {managers} } = useStore();
-  const { projects } = projectsStore;
-  const project = projects.find((p) => p.id === projectId);
+  const { projectsStore } = useStore();
+  const { projects, managers } = projectsStore;
+  const project = projects.find((p: ProjectStoreType) => p.id === projectId);
   if (project === undefined) {
     return <Redirect to="/"/>
   } else {
@@ -61,7 +63,7 @@ function EventAddPage(): JSX.Element {
         >
 
           <Select>
-            {managers.map(m =>
+            {managers.map((m: AccountStoreType) =>
               <Option key={m.id} value={m.id}>{m.name}</Option>)}
           </Select>
         </Form.Item>

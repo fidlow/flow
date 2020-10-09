@@ -10,6 +10,8 @@ import {
 import { ExecutionStatus } from "../common/ExecutionStatus";
 import EventStore, { EventStoreType } from "./EventStore";
 import Api from "../api/api";
+import AccountStore, { AccountStoreType } from "./AccountStore";
+import { RootStoreModel } from "./RootStore";
 
 const ProjectStore = types
   .model("Project", {
@@ -63,46 +65,89 @@ const ProjectStore = types
       self.events[index] = event;
 
     },
-    loadProjects() {
-      console.log("ok");
-    },
     remove() {
-      getParent<ProjectsStoreType>(self, 2).removeProject(cast(self));
+      getParent<ProjectsStoreType>(self, 2).deleteProject(cast(self));
+    },
+    loadEvent(projectId: string) {
+      getParent<ProjectsStoreType>(  self, 2).loadProjectById(projectId);
+    //   //const res = yield Api.getEventById(projectId);
     },
   }));
 
 const ProjectsStore = types
   .model("Projects", {
     projects: types.optional(types.array(ProjectStore), []),
+    managers: types.optional(types.array(AccountStore), []),
   })
-  .actions((self) => ({
-    loadProjects: flow(function* () {
+  .actions((self) => {
+    const loadProjects = flow(function* () {
       const res = yield Api.getProjects();
-      console.log(...res.message);
       if (res.isError === false) {
         self.projects.clear();
         self.projects.push(...(res.message as ProjectStoreType[]));
-        console.log(self.projects);
+
       }
       return res;
-    }),
-    addProject(project: SnapshotOrInstance<typeof ProjectStore>): void {
-      const newProject = {
-        ...project,
-        id: "testProjectId",
-        date: Date.now(),
-        owner: "1111",
-      };
-      self.projects.push(cast(newProject));
-    },
-    updateProject(project: ProjectStoreType): void {
-      const index = self.projects.findIndex((p) => p.id === project.id);
-      self.projects[index] = project;
-    },
-    removeProject(project: ProjectStoreType) {
-      destroy(project);
-    },
-  }));
+    });
+    const loadManagers = flow(function* () {
+      const res = yield Api.getManagers();
+      if(res.isError === false) {
+        self.managers.clear();
+        self.managers.push(...(res.message as AccountStoreType[]));
+      } else {
+        throw Error(res.message as string)
+      }
+      return res;
+    });
+    const loadProjectById = flow(function* (projectId: string) {
+      yield loadManagers();
+      const res = yield Api.getProjectById(projectId);
+      if (res.isError === false) {
+        const indexProject = self.projects.findIndex((p) => p.id===projectId);
+        if(indexProject === -1)
+          self.projects.push(res.message as ProjectStoreType);
+        else
+          self.projects[indexProject] = res.message as ProjectStoreType;
+      } else {
+        throw Error(res.message as string)
+      }
+      return res;
+    });
+    const addProject =  flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+      project.createdDate = Date.now();
+      const res = yield Api.addProject(cast(project));
+      if(res.isError  === false) {
+        const newProject = {
+          ...project,
+          id: res.message as string,
+          owner: getParent<RootStoreModel>(self, 1).userStore.user?.id || "",
+        };
+        self.projects.push(cast(newProject));
+      } else {
+        throw Error(res.message as string)
+      }
+
+    });
+    const updateProject = flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+      project.createdDate = project.createdDate.valueOf();
+      const res = yield Api.updateProject(cast(project));
+      if(res.isError  === false) {
+        const index = self.projects.findIndex((p) => p.id === project.id);
+        self.projects[index] = project as ProjectStoreType;
+      } else {
+        throw Error(res.message as string)
+      }
+    });
+    const deleteProject = flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+      const res = yield Api.deleteProject(project.id);
+      if (res.isError === false) {
+        destroy(project);
+      } else {
+        throw Error(res.message as string)
+      }
+    });
+    return { loadProjects, loadProjectById, addProject, updateProject, deleteProject };
+  });
 
 export type ProjectStoreType = Instance<typeof ProjectStore>;
 type ProjectsStoreType = Instance<typeof ProjectsStore>;
