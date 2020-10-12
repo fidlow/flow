@@ -1,61 +1,4 @@
-import { ExecutionStatus } from "../common/ExecutionStatus";
 import RootStore, { RootStoreModel } from "./RootStore";
-
-const projectDataSourceArray = [
-  {
-    id: "1",
-    name: "Сделать доставку по договору №123 от 23.05.2020 (с задачами) !!",
-    createdDate: new Date("2020-09-23"),
-    owner: '1111',
-    events: [
-      {
-        id: "1",
-        name: "Принять товар на склад (с работами)",
-        endDate: new Date("2020-09-20"),
-        manager: '3333',
-        status: ExecutionStatus.Finished,
-        tasks: [
-          "Взять товар",
-          "Перенести товар",
-          "Положить товар",
-          "Подисать акт"
-        ]
-      },
-      {
-        id: "2",
-        name: "Маркировать товар",
-        endDate: new Date("2020-09-21"),
-        manager: '4444',
-        status: ExecutionStatus.Processing
-      },
-      {
-        id: "3",
-        name: "Отправить товар",
-        endDate: new Date("2020-09-23"),
-        manager: '5555',
-        status: ExecutionStatus.NotRunning
-      }
-    ]
-  },
-  {
-    id: "2",
-    name: "Сделать доставку по договору №323 от 02.05.2020",
-    createdDate: new Date("2020-09-02"),
-    owner: '1111'
-  },
-  {
-    id: "3",
-    name: "Сделать доставку по договору №16 от 15.05.2019",
-    createdDate: new Date("2019-09-15"),
-    owner: '1111'
-  },
-  {
-    id: "4",
-    name: "Сделать доставку по договору №12 от 11.05.2019",
-    createdDate: new Date("2019-09-11"),
-    owner: '1111'
-  }
-];
 
 export const createStore = (): RootStoreModel => {
   const userDataStr = localStorage.getItem('user');
@@ -63,7 +6,7 @@ export const createStore = (): RootStoreModel => {
   if (userDataStr !== null) userData = JSON.parse(userDataStr);
   return RootStore.create({
     projectsStore: {
-      projects: projectDataSourceArray,
+      projects: [],
       managers: []
     },
     userStore: {

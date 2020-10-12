@@ -10,7 +10,7 @@ const EventStore = types.model("Event", {
   tasks: types.optional(types.array(types.string), [])
 }).actions(self => ({
   remove() {
-    getParent<ProjectStoreType>(self, 2).removeEvent(cast(self));
+    getParent<ProjectStoreType>(self, 2).deleteEvent(cast(self));
   },
 }));
 export default EventStore;

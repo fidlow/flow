@@ -1,4 +1,4 @@
-import {Redirect, useHistory, useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import {Store} from "antd/lib/form/interface";
 import {Badge, Button, Form, Input} from "antd";

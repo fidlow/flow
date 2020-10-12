@@ -1,4 +1,5 @@
 import {
+  applySnapshot,
   cast,
   destroy,
   flow,
@@ -53,18 +54,40 @@ const ProjectStore = types
     },
   }))
   .actions((self) => ({
-    addEvent(event: SnapshotOrInstance<typeof EventStore>): void {
+    addEvent: flow(function* (event: SnapshotOrInstance<typeof EventStore>) {
+      event.endDate = event.endDate.valueOf();
+      const res = yield Api.addEventToProject(self.id, cast(event));
+      if(res.isError  === false) {
+        const newEvent: EventStoreType = cast({
+          ...event,
+          id: res.message as string,
+          manager: getParent<RootStoreModel>(self, 3).userStore.user?.id || "",
+        });
+        self.events.push(newEvent);
+      } else {
+        throw Error(res.message as string)
+      }
       const newEvent = { ...event, id: "testEventId" };
       self.events.push(newEvent);
-    },
-    removeEvent(event: EventStoreType): void {
-      destroy(event);
-    },
-    updateEvent(event: EventStoreType): void {
-      const index = self.events.findIndex((e) => e.id === event.id);
-      self.events[index] = event;
-
-    },
+    }),
+    deleteEvent: flow(function* (event: EventStoreType) {
+      const res = yield Api.deleteEvent(event.id);
+      if (res.isError === false) {
+        destroy(event);
+      } else {
+        throw Error(res.message as string)
+      }
+    }),
+    updateEvent: flow(function* (event: SnapshotOrInstance<typeof EventStore>) {
+      event.endDate = event.endDate.valueOf();
+      const res = yield Api.updateEvent(cast(event));
+      if(res.isError  === false) {
+        const index = self.events.findIndex((e) => e.id === event.id);
+        applySnapshot(self.events[index],{...event as EventStoreType});
+      } else {
+        throw Error(res.message as string)
+      }
+    }),
     remove() {
       getParent<ProjectsStoreType>(self, 2).deleteProject(cast(self));
     },
@@ -126,7 +149,6 @@ const ProjectsStore = types
       } else {
         throw Error(res.message as string)
       }
-
     });
     const updateProject = flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
       project.createdDate = project.createdDate.valueOf();

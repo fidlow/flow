@@ -44,7 +44,7 @@ class Api {
   }
   private static handleResponse(resp: Response): Promise<ResponseInterface> {
     return resp.json().then((data) => {
-      console.log(resp.url, data)
+      // console.log(resp.url, data)
       if(data.statusCode === 401) rootStore?.userStore?.user?.remove();
       return data;
     });
@@ -77,7 +77,7 @@ class Api {
     return this.post(`/event/${projectId}`, event);
   }
   static updateEvent(event: Record<string, undefined>): Promise<ResponseInterface> {
-    return this.put(`/project/${event.id}`, event);
+    return this.put(`/event/${event.id}`, event);
   }
   static deleteEvent(eventId: EventId): Promise<ResponseInterface> {
     return this.delete(`/event/${eventId}`);

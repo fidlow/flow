@@ -1,5 +1,5 @@
 import {Button, Form, Input, Select} from "antd";
-import {Redirect, useHistory, useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import React from "react";
 import {Store} from "antd/lib/form/interface";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
@@ -20,7 +20,9 @@ function EventAddPage(): JSX.Element {
   const { projects, managers } = projectsStore;
   const project = projects.find((p: ProjectStoreType) => p.id === projectId);
   if (project === undefined) {
-    return <Redirect to="/"/>
+    return <div className="site-layout-content">
+      Loading page
+    </div>
   } else {
     const onFinish = (values: Store): void => {
       project.addEvent({ ...values as EventStoreType, endDate: values.endDate.toDate()} );

@@ -1,4 +1,4 @@
-import {Redirect, useHistory, useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import React from "react";
 import {Button, Form, Input, Select} from "antd";
 import {ExecutionStatus} from "../../common/ExecutionStatus";
@@ -18,13 +18,16 @@ function EventEditPage(): JSX.Element {
   const { projectsStore: { projects, managers } } = useStore();
   const project = projects.find((p) => p.id === projectId);
   const event = project?.events?.find((t) => t.id === eventId);
-  if (project === undefined || event === undefined || eventId === undefined) {
-    return <Redirect to="/"/>
+  if (project === undefined || event === undefined) {
+    return <div className="site-layout-content">
+      <h1>Edit Event</h1>
+      Loading project
+    </div>
   } else {
     const onFinish = (values: Store): void => {
       const indexEvent = project.events?.findIndex((p: EventStoreType) => p.id === eventId);
       if(project.events && indexEvent !== undefined && indexEvent !== -1 ) {
-        project.updateEvent({...event, ...values as EventStoreType,endDate: values.endDate.toDate()})
+        project.updateEvent({...event, ...values as EventStoreType, endDate: values.endDate.toDate()})
         history.push(`/project/${projectId}`)
       }
     };
