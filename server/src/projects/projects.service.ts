@@ -26,7 +26,7 @@ export class ProjectsService {
   }
 
   async readOne(id: ProjectId): Promise<ProjectEntity> {
-      const project = await this._projectRepository.findOne({relations: ['owner','events','events.manager'], where: {id}});
+      const project = await this._projectRepository.findOne({relations: ['owner','events','events.manager','events.tasks'], where: {id}});
       if(project) return ProjectMapper.mapToDomain(project);
       else throw Error('NotFoundError')
   }

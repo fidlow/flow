@@ -1,4 +1,5 @@
 import { ExecutionStatus } from "./ExecutionStatus";
+import { TaskInterface } from "./TaskInterface";
 
 export interface EventInterface {
   id?: EventId;
@@ -6,6 +7,6 @@ export interface EventInterface {
   endDate: number;
   status: ExecutionStatus;
   manager: string;
-  tasks?: string[];
+  tasks?: TaskInterface[];
 }
 export type EventId = string;

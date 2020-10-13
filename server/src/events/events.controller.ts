@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, SerializeOptions, UseGuards } from "@nestjs/common";
 import JwtAuthGuard from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
 import { ApiTags } from "@nestjs/swagger";
@@ -15,6 +15,7 @@ import UpdateEventDto from "./dto/update-event.dto";
 export class EventsController {
   constructor(private readonly _eventService: EventsService) {  }
 
+  @SerializeOptions({groups: ['getOne']})
   @Get(':id')
   async getById(@Param('id') id: EventId): Promise<EventResponse> {
     try {
@@ -31,7 +32,7 @@ export class EventsController {
   @Post(':projectId')
   async create(@Param('projectId') projectId: ProjectId, @Body() event: CreateEventDto) : Promise<EventResponse> {
     try {
-      const newEventId = await this._eventService.create(event,projectId);
+      const newEventId = await this._eventService.create(projectId, event);
       return new EventResponse(false, newEventId);
     } catch (e) {
       return new EventResponse(true, e.message);

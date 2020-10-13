@@ -1,9 +1,9 @@
 import { ExecutionStatus } from "../../common/ExecutionStatus";
 import { IsNumber, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { EventInterface } from "../../common/EventInterface";
 
-export default class CreateEventDto {
+export default class CreateEventDto implements EventInterface {
   @IsNumber()
   endDate: number;
   @IsString()

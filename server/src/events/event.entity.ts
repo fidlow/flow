@@ -1,24 +1,25 @@
 import { EventId, EventInterface } from "../common/EventInterface";
 import { ExecutionStatus } from "../common/ExecutionStatus";
-import { Expose, Type } from "class-transformer";
-import { ApiProperty } from "@nestjs/swagger";
+import { Expose } from "class-transformer";
+import { TaskInterface } from "../common/TaskInterface";
 
 export class EventEntity implements EventInterface {
-  private _tasks?: string[];
 
   constructor(
     private _endDate: number,
     private _manager: string,
     private _name: string,
     private _status: ExecutionStatus,
-    private _id?: EventId) {
+    private _id?: EventId,
+    private _tasks?: TaskInterface[]) {
   }
   @Expose()
   get id(): EventId {
     return this._id ?? "";
   }
 
-  get tasks(): string[] {
+  @Expose({groups: ["getOne"]})
+  get tasks(): TaskInterface[] {
     return this._tasks ?? [];
   }
   @Expose()

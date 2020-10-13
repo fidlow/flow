@@ -14,8 +14,8 @@ export class ProjectEntity implements ProjectInterface {
     private _events?: EventInterface[]
   ) {}
   @Expose({groups: ["getOne"]})
-  get events(): EventInterface[] | undefined  {
-    return this._events;
+  get events(): EventInterface[] {
+    return this._events || [];
   }
   @Expose()
   get id(): ProjectId | undefined {
