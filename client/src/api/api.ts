@@ -2,6 +2,7 @@ import { ResponseInterface } from "../../../server/src/common/ResponseInterface"
 import { rootStore } from "../components/App";
 import { ProjectId } from "../commonFromServer/ProjectInterface";
 import { EventId } from "../commonFromServer/EventInterface";
+import { TaskId } from "../commonFromServer/TaskInterface";
 
 const SERVER_PORT = process.env.REACT_APP_PORT;
 const API_PREFIX = '/api';
@@ -44,7 +45,8 @@ class Api {
   }
   private static handleResponse(resp: Response): Promise<ResponseInterface> {
     return resp.json().then((data) => {
-      // console.log(resp.url, data)
+      console.log(resp.url, data)
+      if(data.statusCode === 401) console.log('QQQQQQQQQQ');
       if(data.statusCode === 401) rootStore?.userStore?.user?.remove();
       return data;
     });
@@ -81,6 +83,15 @@ class Api {
   }
   static deleteEvent(eventId: EventId): Promise<ResponseInterface> {
     return this.delete(`/event/${eventId}`);
+  }
+  static addTaskToEvent(eventId: EventId, task: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.post(`/task/${eventId}`, task);
+  }
+  static updateTask(task: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.put(`/task/${task.id}`, task);
+  }
+  static deleteTask(taskId: TaskId): Promise<ResponseInterface> {
+    return this.delete(`/task/${taskId}`);
   }
 
 

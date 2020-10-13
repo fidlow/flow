@@ -11,6 +11,8 @@ import AccountEditPage from "./account/AccountEditPage";
 import { useStore } from "./StoreProvider";
 import { LoginPage } from "./LoginPage";
 import { observer } from "mobx-react-lite";
+import TaskAddPage from "./task/TaskAddPage";
+import TaskEditPage from "./task/TaskEditPage";
 
 function Layout(): JSX.Element {
   const { userStore: {user} } = useStore();
@@ -43,6 +45,16 @@ function Layout(): JSX.Element {
                   exact
                   path="/project/:projectId/event/:eventId"
                   component={EventEditPage}
+                />
+                <Route
+                  exact
+                  path="/project/:projectId/event/:eventId/add-task"
+                  component={TaskAddPage}
+                />
+                <Route
+                  exact
+                  path="/project/:projectId/event/:eventId/task/:taskId"
+                  component={TaskEditPage}
                 />
                 <Route
                   exact

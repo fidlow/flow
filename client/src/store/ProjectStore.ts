@@ -13,6 +13,7 @@ import EventStore, { EventStoreType } from "./EventStore";
 import Api from "../api/api";
 import AccountStore, { AccountStoreType } from "./AccountStore";
 import { RootStoreModel } from "./RootStore";
+import { EventId } from "../commonFromServer/EventInterface";
 
 const ProjectStore = types
   .model("Project", {
@@ -54,21 +55,26 @@ const ProjectStore = types
     },
   }))
   .actions((self) => ({
+    remove() {
+      getParent<ProjectsStoreType>(self, 2).deleteProject(cast(self));
+    },
+    loadEvent(projectId: string) {
+      getParent<ProjectsStoreType>(  self, 2).loadProjectById(projectId);
+      //   //const res = yield Api.getEventById(projectId);
+    },
     addEvent: flow(function* (event: SnapshotOrInstance<typeof EventStore>) {
       event.endDate = event.endDate.valueOf();
       const res = yield Api.addEventToProject(self.id, cast(event));
       if(res.isError  === false) {
         const newEvent: EventStoreType = cast({
           ...event,
-          id: res.message as string,
+          id: res.message as EventId,
           manager: getParent<RootStoreModel>(self, 3).userStore.user?.id || "",
         });
         self.events.push(newEvent);
       } else {
         throw Error(res.message as string)
       }
-      const newEvent = { ...event, id: "testEventId" };
-      self.events.push(newEvent);
     }),
     deleteEvent: flow(function* (event: EventStoreType) {
       const res = yield Api.deleteEvent(event.id);
@@ -83,18 +89,11 @@ const ProjectStore = types
       const res = yield Api.updateEvent(cast(event));
       if(res.isError  === false) {
         const index = self.events.findIndex((e) => e.id === event.id);
-        applySnapshot(self.events[index],{...event as EventStoreType});
+        applySnapshot(self.events[index],event as EventStoreType);
       } else {
         throw Error(res.message as string)
       }
     }),
-    remove() {
-      getParent<ProjectsStoreType>(self, 2).deleteProject(cast(self));
-    },
-    loadEvent(projectId: string) {
-      getParent<ProjectsStoreType>(  self, 2).loadProjectById(projectId);
-    //   //const res = yield Api.getEventById(projectId);
-    },
   }));
 
 const ProjectsStore = types
@@ -118,7 +117,8 @@ const ProjectsStore = types
         self.managers.clear();
         self.managers.push(...(res.message as AccountStoreType[]));
       } else {
-        throw Error(res.message as string)
+        console.log('aaaaaaaaaa', res)
+        //throw Error(res.message as string)
       }
       return res;
     });
