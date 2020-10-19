@@ -53,7 +53,7 @@ export function LoginPage(): JSX.Element {
             validateStatus={validateStatus}
             help={
               validateStatus !== ""
-                ? "Неверный адрес электронной почты или пароль."
+                ? "Wrong email or password."
                 : null
             }
             rules={[{ required: true, message: "Please input your password!" }]}

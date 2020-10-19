@@ -1,16 +1,27 @@
 import { useStore } from "../StoreProvider";
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Button, Form, Input } from "antd";
 import { UpdateAccountDto } from "../../store/UserStore";
 import { Store } from "antd/lib/form/interface";
+import { ValidateStatus } from "antd/lib/form/FormItem";
 
 function SettingEditPage(): JSX.Element {
   const { userStore } = useStore();
+  const [confirmValidateStatus, setConfirmValidateStatus] = useState<ValidateStatus>("");
+  const [passwordValidateStatus, setPasswordValidateStatus] = useState<ValidateStatus>("");
   const {user} = userStore;
     const onFinishAccount = (values: Store): void => {
-    if(values.new_password === values.confirm_password)
-      userStore.update(values as UpdateAccountDto);
+    if(values.new_password === values.confirm_password) {
+      setConfirmValidateStatus("");
+      setPasswordValidateStatus("");
+      userStore.update(values as UpdateAccountDto)
+        .catch((error) => {
+          if(error.message === "PasswordWrong")
+            setPasswordValidateStatus("error");
+        });
+    }
+    else setConfirmValidateStatus("error");
   }
   return <div className="site-layout-content">
     <Form
@@ -21,21 +32,27 @@ function SettingEditPage(): JSX.Element {
       <Form.Item
         label="Name"
         name="name"
-        rules={[{required: true, message: 'Please input your name!'}]}
+        rules={[{required: false, message: 'Please input your name!'}]}
       >
         <Input/>
       </Form.Item>
       <Form.Item
         label="Email"
         name="email"
-        rules={[{required: true, message: 'Please input your email!'}]}
+        rules={[{required: false, message: 'Please input your email!'}]}
       >
         <Input/>
       </Form.Item>
       <Form.Item
         label="Old password"
         name="old_password"
-        rules={[{required: false, message: 'Please input your old password!'}]}
+        rules={[{required: true, message: 'Please input your old password!'}]}
+        validateStatus={passwordValidateStatus}
+        help={
+          passwordValidateStatus !== ""
+            ? "Wrong password."
+            : null
+        }
       >
         <Input.Password />
       </Form.Item>
@@ -50,6 +67,12 @@ function SettingEditPage(): JSX.Element {
         label="Repeat new password"
         name="confirm_password"
         rules={[{required: false, message: 'Please input your password!'}]}
+        validateStatus={confirmValidateStatus}
+        help={
+          confirmValidateStatus !== ""
+            ? "Wrong confirm password."
+            : null
+        }
       >
         <Input.Password />
       </Form.Item>
