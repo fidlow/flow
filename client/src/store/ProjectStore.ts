@@ -112,15 +112,19 @@ const ProjectsStore = types
       return res;
     });
     const loadManagers = flow(function* () {
-      const res = yield Api.getManagers();
-      if(res.isError === false) {
-        self.managers.clear();
-        self.managers.push(...(res.message as AccountStoreType[]));
-      } else {
-        console.log('aaaaaaaaaa', res)
-        //throw Error(res.message as string)
+      try {
+        const res = yield Api.getManagers();
+        if(res.isError === false) {
+          self.managers.clear();
+          self.managers.push(...(res.message as AccountStoreType[]));
+        } else {
+          throw Error(res.message as string)
+        }
+        return res;
+      } catch (e) {
+        console.error(e.message)
       }
-      return res;
+
     });
     const loadProjectById = flow(function* (projectId: string) {
       yield loadManagers();

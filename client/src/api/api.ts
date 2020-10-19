@@ -46,13 +46,24 @@ class Api {
   private static handleResponse(resp: Response): Promise<ResponseInterface> {
     return resp.json().then((data) => {
       console.log(resp.url, data)
-      if(data.statusCode === 401) console.log('QQQQQQQQQQ');
       if(data.statusCode === 401) rootStore?.userStore?.user?.remove();
       return data;
     });
   }
   static login(account: Record<string, undefined>): Promise<ResponseInterface> {
     return this.post('/auth/login', account);
+  }
+  static updateAccount(account: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.put(`/auth/account`, account);
+  }
+  static updatePassword(account: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.put(`/auth/account`, account);
+  }
+  static loadUser(): Promise<ResponseInterface> {
+    return this.get(`/auth/account`);
+  }
+  static checkLogin(): Promise<ResponseInterface> {
+    return this.get(`/auth`);
   }
   static getManagers(): Promise<ResponseInterface> {
     return this.get('/auth/managers');

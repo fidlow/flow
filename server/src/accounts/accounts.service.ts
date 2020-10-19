@@ -36,7 +36,7 @@ export class AccountsService {
     if(accountOrmEntity) {
       if(account.name) accountOrmEntity.name = account.name;
       if(account.email) accountOrmEntity.email = account.email;
-      if(account.password) accountOrmEntity.password = account.password;
+      if(account.new_password) accountOrmEntity.password = account.new_password;
       return this._accountRepository.update(accountOrmEntity.id, accountOrmEntity);
     } else {
       throw Error('NotFoundAccount')
@@ -85,11 +85,5 @@ export class AccountsService {
     await this._accountRepository.save(newAccount);
     return AccountMapper.mapAccountToDomain(newAccount);
   }
-  // async updateEvent(account: Partial<AccountOrmEntity>): Promise<UpdateResult> {
-  //   return await this._accountRepository.updateEvent(account.id, account);
-  // }
-  // async delete(id: string): Promise<DeleteResult> {
-  //   return await this._accountRepository.delete(id);
-  // }
 
 }

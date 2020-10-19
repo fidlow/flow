@@ -21,6 +21,7 @@ import AddRoleAccount from "../accounts/dto/add-role-account.dto";
 import { Roles } from "./roles.decorator";
 import { AccountEntity } from "../accounts/account.entity";
 import UpdateAccountDto from "../accounts/dto/update-account.dto";
+import { AccountId } from "../common/AccountInterface";
 
 @ApiTags("auth")
 @Controller('auth')

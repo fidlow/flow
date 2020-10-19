@@ -33,8 +33,10 @@ export function MainMenu(): JSX.Element {
         </Link>
       </Menu.Item>
       <Menu.Item key="3">
+        <Link to="/setting">
         <SettingOutlined />
         <span>Settings</span>
+        </Link>
       </Menu.Item>
       <Menu.Item key="/logout">
         <LogoutOutlined />
