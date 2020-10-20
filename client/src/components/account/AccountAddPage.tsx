@@ -1,38 +1,38 @@
-import { useStore } from "../StoreProvider";
+import { observer } from "mobx-react-lite";
+import { Button, Form, Input } from "antd";
 import React, { useState } from "react";
 import { ValidateStatus } from "antd/lib/form/FormItem";
 import { Store } from "antd/lib/form/interface";
-import { UpdateAccountDto } from "../../store/UserStore";
-import { Button, Form, Input } from "antd";
-import { useParams } from "react-router-dom";
-import { observer } from "mobx-react-lite";
+import { useStore } from "../StoreProvider";
+import { AccountStoreType } from "../../store/AccountStore";
+import { useHistory } from "react-router-dom";
 
-function AccountEditPage():JSX.Element {
+function AccountAddPage(): JSX.Element {
+  const history = useHistory();
   const { projectsStore } = useStore();
-  const { managers } = projectsStore;
-  const { accountId } = useParams<{
-    accountId: string;
-  }>();
-  const account = managers.find((m) => m.id === accountId);
   const [confirmValidateStatus, setConfirmValidateStatus] = useState<
     ValidateStatus
-    >("");
+  >("");
   const [passwordValidateStatus, setPasswordValidateStatus] = useState<
     ValidateStatus
-    >("");
+  >("");
   const onFinishAccount = (values: Store): void => {
-    if (values.new_password === values.confirm_password) {
+    if (values.password === values.confirm_password) {
       setConfirmValidateStatus("");
-      setPasswordValidateStatus("");
-      projectsStore.updateAccount(values as UpdateAccountDto).catch((error) => {
-        if (error.message === "PasswordWrong")
-          setPasswordValidateStatus("error");
-      });
+      projectsStore
+        .addAccount(values as AccountStoreType)
+        .then(() => {
+          history.push("/accounts");
+        })
+        .catch((error: Error) => {
+          if (error.message === "PasswordWrong" || error.name === "400")
+            setPasswordValidateStatus("error");
+        });
     } else setConfirmValidateStatus("error");
   };
   return (
     <div className="site-layout-content">
-      <Form name="basic" onFinish={onFinishAccount} initialValues={account}>
+      <Form name="basic" onFinish={onFinishAccount}>
         <Form.Item
           label="Name"
           name="name"
@@ -48,8 +48,8 @@ function AccountEditPage():JSX.Element {
           <Input />
         </Form.Item>
         <Form.Item
-          label="New password"
-          name="new_password"
+          label="Password"
+          name="password"
           rules={[{ required: false, message: "Please input your password!" }]}
           validateStatus={passwordValidateStatus}
           help={passwordValidateStatus !== "" ? "Wrong password." : null}
@@ -71,7 +71,8 @@ function AccountEditPage():JSX.Element {
           </Button>
         </Form.Item>
       </Form>
-    </div>)
+    </div>
+  );
 }
 
-export default observer(AccountEditPage);
+export default observer(AccountAddPage);

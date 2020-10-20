@@ -31,8 +31,8 @@ export class AuthController {
   @Post('register')
   async register(@Body() register: RegisterDto): Promise<AuthResponse> {
     try {
-      const createdAccount = await this._authService.register(register);
-      return new AuthResponse(false, createdAccount);
+      const createdAccountId = await this._authService.register(register);
+      return new AuthResponse(false, createdAccountId);
     } catch (e) {
       if (e.code === DatabaseErrorCode.DuplicateError) {
         return new AuthResponse(true,  'DuplicateError');

@@ -3,6 +3,7 @@ import { rootStore } from "../components/App";
 import { ProjectId } from "../commonFromServer/ProjectInterface";
 import { EventId } from "../commonFromServer/EventInterface";
 import { TaskId } from "../commonFromServer/TaskInterface";
+import { AccountId } from "../commonFromServer/AccountInterface";
 
 const SERVER_PORT = process.env.REACT_APP_PORT;
 const API_PREFIX = '/api';
@@ -46,6 +47,7 @@ class Api {
   private static handleResponse(resp: Response): Promise<ResponseInterface> {
     return resp.json().then((data) => {
       console.log(resp.url, data)
+      if(data.statusCode === 400) data.message = data.statusCode;
       if(data.statusCode === 401) rootStore?.userStore?.user?.remove();
       return data;
     });
@@ -53,8 +55,17 @@ class Api {
   static login(account: Record<string, undefined>): Promise<ResponseInterface> {
     return this.post('/auth/login', account);
   }
-  static updateAccount(account: Record<string, undefined>): Promise<ResponseInterface> {
+  static addAccount(account: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.post('/auth/register', account);
+  }
+  static updateMyAccount(account: Record<string, undefined>): Promise<ResponseInterface> {
     return this.put(`/auth/account`, account);
+  }
+  static updateAccount(account: Record<string, undefined>): Promise<ResponseInterface> {
+    return this.put(`/auth/account/${account}`, account);
+  }
+  static deleteAccount(accountId: AccountId): Promise<ResponseInterface> {
+    return this.delete(`/auth/account/${accountId}`);
   }
   static updatePassword(account: Record<string, undefined>): Promise<ResponseInterface> {
     return this.put(`/auth/account`, account);
@@ -67,6 +78,9 @@ class Api {
   }
   static getManagers(): Promise<ResponseInterface> {
     return this.get('/auth/managers');
+  }
+  static getAccounts(): Promise<ResponseInterface> {
+    return this.get('/auth/accounts');
   }
   static getProjects(): Promise<ResponseInterface> {
     return this.get('/project');

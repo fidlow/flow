@@ -10,6 +10,7 @@ import CreateRoleDto from '../accounts/dto/create-role.dto';
 import RoleEntity from '../accounts/role.entity';
 import { DeleteResult, UpdateResult } from "typeorm";
 import UpdateAccountDto from "../accounts/dto/update-account.dto";
+import { AccountId } from "../common/AccountInterface";
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
   private static async getHashedPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
-  public async register(registrationData: RegisterDto): Promise<AccountEntity> {
+  public async register(registrationData: RegisterDto): Promise<AccountId> {
     const hashedPassword = await AuthService.getHashedPassword(registrationData.password);
     return await this._accountsService.createEmployee({
       ...registrationData,

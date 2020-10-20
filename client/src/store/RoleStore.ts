@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { Instance, types } from "mobx-state-tree";
 
 const RoleStore = types
   .model("Account", {
@@ -7,3 +7,4 @@ const RoleStore = types
   })
 
 export default RoleStore;
+export type RoleStoreType = Instance<typeof RoleStore>;

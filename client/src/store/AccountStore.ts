@@ -12,7 +12,7 @@ const AccountStore = types
   .actions(self => ({
     remove() {
       getParent<UserStoreType>(self, 1).logout(cast(self));
-    }
+    },
   }))
 
 export default AccountStore;

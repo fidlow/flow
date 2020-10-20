@@ -3,10 +3,11 @@ import {
   cast,
   destroy,
   flow,
-  getParent, getSnapshot,
+  getParent,
+  getSnapshot,
   Instance,
   SnapshotOrInstance,
-  types
+  types,
 } from "mobx-state-tree";
 import { ExecutionStatus } from "../common/ExecutionStatus";
 import EventStore, { EventStoreType } from "./EventStore";
@@ -41,7 +42,7 @@ const ProjectStore = types
     },
     get endDate(): Date | null {
       if (self.events?.length > 0) {
-        const events = getSnapshot(self.events)
+        const events = getSnapshot(self.events);
         const maxEventDate = events
           .slice(1)
           .reduce(
@@ -59,13 +60,13 @@ const ProjectStore = types
       getParent<ProjectsStoreType>(self, 2).deleteProject(cast(self));
     },
     loadEvent(projectId: string) {
-      getParent<ProjectsStoreType>(  self, 2).loadProjectById(projectId);
-      //   //const res = yield Api.getEventById(projectId);
+      getParent<ProjectsStoreType>(self, 2).loadProjectById(projectId);
+      //const res = yield Api.getEventById(projectId);
     },
     addEvent: flow(function* (event: SnapshotOrInstance<typeof EventStore>) {
       event.endDate = event.endDate.valueOf();
       const res = yield Api.addEventToProject(self.id, cast(event));
-      if(res.isError  === false) {
+      if (res.isError === false) {
         const newEvent: EventStoreType = cast({
           ...event,
           id: res.message as EventId,
@@ -73,7 +74,7 @@ const ProjectStore = types
         });
         self.events.push(newEvent);
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     }),
     deleteEvent: flow(function* (event: EventStoreType) {
@@ -81,17 +82,17 @@ const ProjectStore = types
       if (res.isError === false) {
         destroy(event);
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     }),
     updateEvent: flow(function* (event: SnapshotOrInstance<typeof EventStore>) {
       event.endDate = event.endDate.valueOf();
       const res = yield Api.updateEvent(cast(event));
-      if(res.isError  === false) {
+      if (res.isError === false) {
         const index = self.events.findIndex((e) => e.id === event.id);
-        applySnapshot(self.events[index],event as EventStoreType);
+        applySnapshot(self.events[index], event as EventStoreType);
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     }),
   }));
@@ -107,43 +108,95 @@ const ProjectsStore = types
       if (res.isError === false) {
         self.projects.clear();
         self.projects.push(...(res.message as ProjectStoreType[]));
-
       }
       return res;
     });
     const loadManagers = flow(function* () {
       try {
         const res = yield Api.getManagers();
-        if(res.isError === false) {
+        if (res.isError === false) {
           self.managers.clear();
           self.managers.push(...(res.message as AccountStoreType[]));
         } else {
-          throw Error(res.message as string)
+          throw Error(res.message as string);
         }
         return res;
       } catch (e) {
-        console.error(e.message)
+        console.error(e.message);
       }
-
+    });
+    const addAccount = flow(function* (
+      account: SnapshotOrInstance<typeof AccountStore>
+    ) {
+      const res = yield Api.addAccount(cast(account));
+      if (res.isError === false) {
+        const newAccount = {
+          ...account,
+          id: res.message as string,
+        } as AccountStoreType;
+        self.managers.push(newAccount);
+      } else {
+        const error = new Error(res.message as string);
+        error.name = res.statusCode.toString();
+        throw error;
+      }
+    });
+    const deleteAccount = flow(function* (
+      account: SnapshotOrInstance<typeof AccountStore>
+    ) {
+      if (account.id) {
+        const res = yield Api.deleteAccount(account.id);
+        if (res.isError === false) {
+          destroy(account);
+        } else {
+          throw Error(res.message as string);
+        }
+      }
+    });
+    const updateAccount = flow(function* (
+      account: SnapshotOrInstance<typeof AccountStore>
+    ) {
+      const res = yield Api.updateAccount(cast(account));
+      if (res.isError === false) {
+        const index = self.managers.findIndex((a) => a.id === account.id);
+        self.managers[index] = account as AccountStoreType;
+      } else {
+        throw Error(res.message as string);
+      }
+    });
+    const loadAccounts = flow(function* () {
+      try {
+        const res = yield Api.getAccounts();
+        if (res.isError === false) {
+          self.managers.clear();
+          self.managers.push(...(res.message as AccountStoreType[]));
+        } else {
+          throw Error(res.message as string);
+        }
+        return res;
+      } catch (e) {
+        throw Error(e.message as string);
+      }
     });
     const loadProjectById = flow(function* (projectId: string) {
       yield loadManagers();
       const res = yield Api.getProjectById(projectId);
       if (res.isError === false) {
-        const indexProject = self.projects.findIndex((p) => p.id===projectId);
-        if(indexProject === -1)
+        const indexProject = self.projects.findIndex((p) => p.id === projectId);
+        if (indexProject === -1)
           self.projects.push(res.message as ProjectStoreType);
-        else
-          self.projects[indexProject] = res.message as ProjectStoreType;
+        else self.projects[indexProject] = res.message as ProjectStoreType;
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
       return res;
     });
-    const addProject =  flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+    const addProject = flow(function* (
+      project: SnapshotOrInstance<typeof ProjectStore>
+    ) {
       project.createdDate = Date.now();
       const res = yield Api.addProject(cast(project));
-      if(res.isError  === false) {
+      if (res.isError === false) {
         const newProject = {
           ...project,
           id: res.message as string,
@@ -151,28 +204,42 @@ const ProjectsStore = types
         };
         self.projects.push(cast(newProject));
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     });
-    const updateProject = flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+    const updateProject = flow(function* (
+      project: SnapshotOrInstance<typeof ProjectStore>
+    ) {
       project.createdDate = project.createdDate.valueOf();
       const res = yield Api.updateProject(cast(project));
-      if(res.isError  === false) {
+      if (res.isError === false) {
         const index = self.projects.findIndex((p) => p.id === project.id);
         self.projects[index] = project as ProjectStoreType;
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     });
-    const deleteProject = flow(function* (project: SnapshotOrInstance<typeof ProjectStore>) {
+    const deleteProject = flow(function* (
+      project: SnapshotOrInstance<typeof ProjectStore>
+    ) {
       const res = yield Api.deleteProject(project.id);
       if (res.isError === false) {
         destroy(project);
       } else {
-        throw Error(res.message as string)
+        throw Error(res.message as string);
       }
     });
-    return { loadProjects, loadProjectById, addProject, updateProject, deleteProject };
+    return {
+      loadProjects,
+      loadProjectById,
+      addProject,
+      updateProject,
+      deleteProject,
+      loadAccounts,
+      addAccount,
+      deleteAccount,
+      updateAccount,
+    };
   });
 
 export type ProjectStoreType = Instance<typeof ProjectStore>;

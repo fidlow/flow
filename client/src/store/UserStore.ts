@@ -35,7 +35,7 @@ const UserStore = types
       yield Api.checkLogin()
     }),
     update: flow(function* (account: UpdateAccountDto) {
-      const res = yield Api.updateAccount(cast(account));
+      const res = yield Api.updateMyAccount(cast(account));
       if(res.isError === false) {
         self.user = {...self.user, email: account.email, name: account.name} as AccountStoreType;
         localStorage.setItem('user', JSON.stringify(self.user));

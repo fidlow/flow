@@ -9,6 +9,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useStore } from "./StoreProvider";
 import { MenuInfo } from "rc-menu/lib/interface";
+import { RoleStoreType } from "../store/RoleStore";
 
 export function MainMenu(): JSX.Element {
   const location = useLocation();
@@ -26,18 +27,20 @@ export function MainMenu(): JSX.Element {
           <span>Projects</span>
         </Link>
       </Menu.Item>
-      <Menu.Item key="/account">
-        <Link to="/account">
-          <UserOutlined />
-          <span>Accounts</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <Link to="/setting">
-        <SettingOutlined />
-        <span>Settings</span>
-        </Link>
-      </Menu.Item>
+      {(user?.roles as RoleStoreType[]).some(r => r.id === 1) ?
+          <Menu.Item key="/accounts">
+            <Link to="/accounts">
+              <UserOutlined />
+              <span>Accounts</span>
+            </Link>
+          </Menu.Item>
+        : null}
+      <Menu.Item key="/settings">
+          <Link to="/settings">
+            <SettingOutlined />
+            <span>Settings</span>
+          </Link>
+        </Menu.Item>
       <Menu.Item key="/logout">
         <LogoutOutlined />
         <span>Logout</span>

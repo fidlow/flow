@@ -14,6 +14,8 @@ import { observer } from "mobx-react-lite";
 import TaskAddPage from "./task/TaskAddPage";
 import TaskEditPage from "./task/TaskEditPage";
 import SettingEditPage from "./account/SettingEditPage";
+import AccountAddPage from "./account/AccountAddPage";
+import AccountTablePage from "./account/AccountTablePage";
 
 function Layout(): JSX.Element {
   const { userStore: {user} } = useStore();
@@ -59,12 +61,22 @@ function Layout(): JSX.Element {
                 />
                 <Route
                   exact
-                  path="/account"
+                  path="/account/:accountId"
                   component={AccountEditPage}
                 />
                 <Route
                   exact
-                  path="/setting"
+                  path="/add-account"
+                  component={AccountAddPage}
+                />
+                <Route
+                  exact
+                  path="/accounts"
+                  component={AccountTablePage}
+                />
+                <Route
+                  exact
+                  path="/settings"
                   component={SettingEditPage}
                 />
               </Switch>
