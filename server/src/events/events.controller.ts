@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, SerializeOptions, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  Req,
+  SerializeOptions,
+  UseGuards
+} from "@nestjs/common";
 import JwtAuthGuard from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
 import { ApiTags } from "@nestjs/swagger";
@@ -8,6 +20,8 @@ import EventResponse from "./dto/event-response.dto";
 import CreateEventDto from "./dto/create-event.dto";
 import { ProjectId } from "../common/ProjectInterface";
 import UpdateEventDto from "./dto/update-event.dto";
+import RequestWithAccount from "../accounts/request-with-account.interface";
+import ProjectResponse from "../projects/dto/project-response.dto";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('event')
@@ -26,6 +40,20 @@ export class EventsController {
       return new EventResponse(false, res);
     } catch (e) {
       return new EventResponse(true, e.message);
+    }
+  }
+
+  @SerializeOptions({groups: ['getOne']})
+  @Get('project')
+  async get( @Req() req: RequestWithAccount): Promise<ProjectResponse> {
+    try {
+      const res = await this._eventService.readEventsByAccount(req.user.id);
+      if (!res) {
+        return new ProjectResponse(true, 'NotFoundEntityError');
+      }
+      return new ProjectResponse(false, res);
+    } catch (e) {
+      return new ProjectResponse(true, e.message);
     }
   }
 

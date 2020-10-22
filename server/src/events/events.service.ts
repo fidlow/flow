@@ -10,6 +10,9 @@ import { EventId } from '../common/EventInterface';
 import CreateEventDto from './dto/create-event.dto';
 import UpdateEventDto from './dto/update-event.dto';
 import { AccountOrmEntity } from '../accounts/account.orm-entity';
+import { ProjectEntity } from "../projects/project.entity";
+import { AccountId } from "../common/AccountInterface";
+import { ProjectMapper } from "../projects/project.mapper";
 
 @Injectable()
 export class EventsService {
@@ -28,6 +31,12 @@ export class EventsService {
       where: { project: projectOrmEntity },
     });
     return eventsOrmEntity.map(EventMapper.mapToDomain);
+  }
+  async readEventsByAccount(accountId: AccountId): Promise<ProjectEntity[]> {
+    const accountOrmEntity = await this._accountRepository.findOne({accountId});
+    const eventsOrmEntity = await this._eventRepository.find({manager: accountOrmEntity});
+    const projectsOrmEntity = eventsOrmEntity.map(e => e.project);
+    return projectsOrmEntity.map(ProjectMapper.mapToDomain);
   }
 
   async readOne(id: EventId): Promise<EventEntity> {

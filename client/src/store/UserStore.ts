@@ -22,7 +22,7 @@ const UserStore = types
       return res;
     }),
     loadUser: flow(function* () {
-      const res = yield Api.loadUser();
+      const res = yield Api.getUser();
       if(res.isError === false) {
         self.user=res.message as AccountStoreType;
         localStorage.setItem('user', JSON.stringify(res.message));

@@ -20,6 +20,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import UpdateProjectDto from './dto/update-project.dto';
 import { Roles } from '../auth/roles.decorator';
 import { ProjectId } from "../common/ProjectInterface";
+import RoleEntity from "../accounts/role.entity";
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('project')
@@ -32,7 +33,11 @@ export class ProjectsController {
     @Req() req: RequestWithAccount,
   ): Promise<ProjectResponse> {
     try {
-      const res = await this._projectSerivce.readProjectsByAccount(req.user.id);
+      let res;
+      if(req.user.isAdmin())
+        res = await this._projectSerivce.readAll();
+      else
+        res = await this._projectSerivce.readProjectsByAccount(req.user.id);
       return new ProjectResponse(false, res);
     } catch (e) {
       return new ProjectResponse(true, e.message);
@@ -55,9 +60,13 @@ export class ProjectsController {
 
   @SerializeOptions({groups: ['getOne']})
   @Get(':id')
-  async getById(@Param('id') id: ProjectId): Promise<ProjectResponse> {
+  async getById(@Req() req: RequestWithAccount, @Param('id') id: ProjectId): Promise<ProjectResponse> {
     try {
-      const res = await this._projectSerivce.readOne(id);
+      let res;
+      if(req.user.isAdmin())
+        res = await this._projectSerivce.readOne(id);
+      else
+        res = await this._projectSerivce.readOneByAccount(id, req.user.id);
       if (!res) {
         return new ProjectResponse(true, 'NotFoundEntityError');
       }

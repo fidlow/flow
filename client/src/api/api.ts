@@ -70,7 +70,7 @@ class Api {
   static updatePassword(account: Record<string, undefined>): Promise<ResponseInterface> {
     return this.put(`/auth/account`, account);
   }
-  static loadUser(): Promise<ResponseInterface> {
+  static getUser(): Promise<ResponseInterface> {
     return this.get(`/auth/account`);
   }
   static checkLogin(): Promise<ResponseInterface> {
@@ -88,6 +88,9 @@ class Api {
   static getProjectById(projectId: ProjectId): Promise<ResponseInterface> {
     return this.get(`/project/${projectId}`);
   }
+  static getEventsWithProject(): Promise<ResponseInterface> {
+    return this.get(`/event/project`);
+  }
   static addProject(project: Record<string, undefined>): Promise<ResponseInterface> {
     return this.post(`/project`, project);
   }
@@ -98,6 +101,9 @@ class Api {
     return this.delete(`/project/${projectId}`);
   }
   static getEventById(eventId: string): Promise<ResponseInterface> {
+    return this.get(`/event/${eventId}`);
+  }
+  static getEvents(eventId: string): Promise<ResponseInterface> {
     return this.get(`/event/${eventId}`);
   }
   static addEventToProject(projectId: ProjectId, event: Record<string, undefined>): Promise<ResponseInterface> {

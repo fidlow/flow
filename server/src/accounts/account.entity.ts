@@ -33,5 +33,9 @@ export class AccountEntity implements AccountInterface {
     return this._password;
   }
 
+  isAdmin(): boolean {
+    return this.roles.findIndex(r => r.id == 1) !== -1;
+  }
+
 
 }
