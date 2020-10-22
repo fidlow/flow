@@ -34,9 +34,8 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Docker run database
 
-## License
-
-  Nest is [MIT licensed](LICENSE).
-
- sudo docker run --rm --name projectflow-postgres -p 5432:5432 -e POSTGRES_PASSWORD=123456 -v /mnt/c/Users/odont/IdeaProjects/project-flow/postgres:/var/lib/postgresql/data -d postgres
+```bash
+# sudo docker run --rm --name projectflow-postgres -p 5432:5432 -e POSTGRES_PASSWORD=123456 -v /mnt/c/Users/odont/IdeaProjects/project-flow/postgres:/var/lib/postgresql/data -d postgres
+```
