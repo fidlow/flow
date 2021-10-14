@@ -1,7 +1,5 @@
 ## Project Flow
 
-description
-
 ## Installation
 
 ```bash
